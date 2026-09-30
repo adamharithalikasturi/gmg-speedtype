@@ -1,1 +1,8 @@
-{ "name": "gmg-speedtype", "version": "1.0.0", "private": true, "scripts": { "start": "node server.js" } }
+{
+  "name": "gmg-speedtype",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

@@ -1,172 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GMG Password Sprint</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{--navy:#0c1f5a;--ink:#14213d;--bg:#f4f6fb;--card:#fff;--line:#dfe4f0;--gold:#e0a526;--ok:#1a8f5c;--bad:#d23b3b;--mute:#6b7693}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-header{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:12px 28px}
-header img{height:40px}
-header h1{font:800 22px Fraunces,serif;margin:0;color:var(--navy)}
-header button{margin-left:auto;background:none;border:1px solid var(--line);border-radius:6px;padding:6px 12px;color:var(--mute);cursor:pointer;font:inherit;font-size:13px}
-main{display:grid;grid-template-columns:minmax(320px,1fr) minmax(340px,1fr);gap:24px;max-width:1150px;margin:24px auto;padding:0 20px}
-@media(max-width:860px){main{grid-template-columns:1fr}}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
-h2{font:800 20px Fraunces,serif;margin:0 0 14px;color:var(--navy)}
-label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
-input[type=text]{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font:inherit}
-input:focus,button:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
-.photo{display:flex;align-items:center;gap:12px;margin-top:14px}
-.av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:600;background-size:cover;background-position:center;flex:none}
-.btn{margin-top:20px;width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;padding:14px;font:600 16px Inter;cursor:pointer}
-.btn:hover{background:#15307f}
-.small{font-size:13px;color:var(--mute)}
-.target{font:600 28px/1.3 "SF Mono",Consolas,monospace;letter-spacing:1px;background:var(--bg);border-radius:10px;padding:18px;margin:10px 0;text-align:center;word-break:break-all}
-.target span.ok{color:var(--ok)}.target span.bad{color:#fff;background:var(--bad);border-radius:3px}.target span.cur{box-shadow:inset 0 -3px var(--navy)}
-#count{font:800 120px Fraunces,serif;color:var(--navy);text-align:center;line-height:1.2}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
-.stat{background:var(--bg);border-radius:10px;padding:12px;text-align:center}
-.stat b{display:block;font:800 26px Fraunces,serif;color:var(--navy)}
-.hide{display:none!important}
-.podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:8px 0 22px;min-height:190px}
-.pod{flex:1;max-width:130px;text-align:center}
-.pod .av{margin:0 auto 6px;width:54px;height:54px}
-.pod .nm{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pod .sc{font-size:12px;color:var(--mute)}
-.pod .blk{margin-top:6px;border-radius:8px 8px 0 0;background:var(--navy);color:#fff;font:800 28px Fraunces,serif;display:grid;place-items:center}
-.pod.p1 .blk{height:96px;background:var(--gold)}.pod.p2 .blk{height:70px}.pod.p3 .blk{height:50px;background:#3a4c8a}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th{text-align:left;font-weight:500;color:var(--mute);padding:6px 6px;border-bottom:1px solid var(--line)}
-td{padding:9px 6px;border-bottom:1px solid var(--line)}
-tr.me{background:#fff7e0}
-td.n{display:flex;align-items:center;gap:8px}td.n .av{width:28px;height:28px;font-size:11px}
-.num{text-align:right;font-variant-numeric:tabular-nums}
-canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
-@media(prefers-reduced-motion:reduce){canvas#fx{display:none}}
-</style>
-</head>
-<body>
-<canvas id="fx"></canvas>
-<header>
-  <img src="logo.png" alt="GMG">
-  <h1>Password Sprint</h1>
-  <button id="admin">Admin reset</button>
-</header>
-<main>
-  <section class="panel">
-    <div id="v-form">
-      <h2>Enter your details</h2>
-      <label for="name">Name</label><input type="text" id="name" maxlength="40" autocomplete="off">
-      <label for="dept">Department</label><input type="text" id="dept" maxlength="40" autocomplete="off">
-      <div class="photo"><div class="av" id="avf">?</div>
-        <div><input type="file" id="pic" accept="image/*" class="hide"><button class="small" id="picbtn" type="button" style="border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;cursor:pointer">Add photo (optional)</button></div></div>
-      <p class="small" id="err" style="color:var(--bad);min-height:18px"></p>
-      <button class="btn" id="go">Start</button>
-      <p class="small">You get one timed attempt per round. Retry as often as you like, and your best score counts.</p>
-    </div>
-    <div id="v-play" class="hide">
-      <div id="count" class="hide">3</div>
-      <div id="typing" class="hide">
-        <h2>Type the password</h2>
-        <div class="target" id="target"></div>
-        <input type="text" id="typed" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the password here" style="font:inherit;font-size:20px;text-align:center">
-        <p class="small">The clock started on your first keystroke. Typos count against accuracy.</p>
-      </div>
-    </div>
-    <div id="v-res" class="hide">
-      <h2 id="rtitle">Done</h2>
-      <div class="stats"><div class="stat"><b id="rw">0</b>WPM</div><div class="stat"><b id="ra">0%</b>Accuracy</div><div class="stat"><b id="rt">0s</b>Time</div></div>
-      <p id="rrank" style="font-weight:600;font-size:17px"></p>
-      <p class="small">Score: <b id="rn"></b> (WPM × accuracy)</p>
-      <button class="btn" id="again">Try again</button>
-    </div>
-  </section>
-  <section class="panel">
-    <h2>Top 3</h2>
-    <div class="podium" id="podium"></div>
-    <h2>Leaderboard</h2>
-    <table><thead><tr><th>#</th><th>Name</th><th>Dept</th><th class="num">WPM</th><th class="num">Acc</th><th class="num">Time</th><th class="num">Score</th></tr></thead><tbody id="rows"></tbody></table>
-    <p class="small hide" id="empty">No scores yet. Be the first.</p>
-  </section>
-</main>
-<script>
-const PW='Welcome2GMG@2026';
-const $=id=>document.getElementById(id);
-let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'', rows=[], t0=0, keys=0, errors=0, prev='';
-const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
-const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
-const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-$('name').value=me.name||'';$('dept').value=me.dept||'';
-function setAv(){const a=$('avf');a.textContent=photo?'':ini($('name').value);a.style.backgroundImage=photo?`url(${photo})`:''}
-setAv();$('name').oninput=setAv;
-$('picbtn').onclick=()=>$('pic').click();
-$('pic').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=96;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,96,96);photo=c.toDataURL('image/jpeg',.8);setAv()};im.src=URL.createObjectURL(f)};
-function show(v){['v-form','v-play','v-res'].forEach(x=>$(x).classList.toggle('hide',x!==v))}
+// GMG SpeedType server. No dependencies, just Node 16+. Run: ADMIN_PIN=yourpin node server.js
+const http = require('http'), fs = require('fs'), path = require('path');
+const PORT = process.env.PORT || 3000;
+const PIN = process.env.ADMIN_PIN || '1234';
+const DB = path.join(process.env.DATA_DIR || __dirname, 'data.json');
+const TARGET_PW = 'Welcome2GMG@2026';
+const LEN = TARGET_PW.length;
+let rows = []; try { rows = JSON.parse(fs.readFileSync(DB, 'utf8')); } catch {}
+const save = () => fs.writeFileSync(DB, JSON.stringify(rows));
+const types = { '.html': 'text/html', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
+const json = (res, c, o) => { res.writeHead(c, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(o)); };
+const body = req => new Promise(r => { let b = ''; req.on('data', c => { b += c; if (b.length > 500e3) req.destroy(); }); req.on('end', () => { try { r(JSON.parse(b)); } catch { r({}); } }); });
+const sorted = () => [...rows].sort((a, b) => b.net - a.net);
 
-async function load(){try{rows=await (await fetch('/api/scores')).json();draw()}catch{}}
-function draw(){
-  const top=[...rows].sort((a,b)=>b.net-a.net), mk=(r,i)=>`<div class="pod p${i+1}">${avHTML(r)}<div class="nm">${esc(r.name)}</div><div class="sc">${r.net} pts</div><div class="blk">${i+1}</div></div>`;
-  const order=[1,0,2].filter(i=>top[i]);
-  $('podium').innerHTML=order.map(i=>mk(top[i],i)).join('');
-  $('empty').classList.toggle('hide',top.length>0);
-  $('rows').innerHTML=top.map((r,i)=>`<tr class="${r.name===me.name&&r.dept===me.dept?'me':''}"><td>${i+1}</td><td class="n">${avHTML(r)}${esc(r.name)}</td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join('');
-}
-load();setInterval(load,4000);
-
-$('go').onclick=()=>{
-  const name=$('name').value.trim(),dept=$('dept').value.trim();
-  if(!name||!dept){$('err').textContent='Enter your name and department to start.';return}
-  $('err').textContent='';me={name,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
-  show('v-play');$('typing').classList.add('hide');$('count').classList.remove('hide');
-  let n=3;$('count').textContent=n;
-  const iv=setInterval(()=>{n--;if(n>0){$('count').textContent=n;return}clearInterval(iv);begin()},900);
-};
-function renderTarget(v){
-  $('target').innerHTML=[...PW].map((c,i)=>{let k='';if(i<v.length)k=v[i]===c?'ok':'bad';else if(i===v.length)k='cur';return`<span class="${k}">${esc(c)}</span>`}).join('');
-}
-function begin(){
-  $('count').classList.add('hide');$('typing').classList.remove('hide');
-  const t=$('typed');t.value='';prev='';keys=errors=0;t0=0;renderTarget('');t.focus();
-}
-$('typed').addEventListener('paste',e=>e.preventDefault());
-$('typed').addEventListener('input',e=>{
-  const t=e.target,v=t.value;
-  if(!t0)t0=performance.now();
-  if(v.length>prev.length){for(let i=prev.length;i<v.length;i++){keys++;if(v[i]!==PW[i])errors++}}
-  prev=v;renderTarget(v);
-  if(v.length>=PW.length){t.blur();finish()}
-});
-async function finish(){
-  const timeMs=performance.now()-t0;
-  try{
-    const r=await (await fetch('/api/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...me,timeMs,keys,errors})})).json();
-    if(r.error){alert(r.error);show('v-form');return}
-    const a=r.attempt;
-    $('rw').textContent=a.wpm;$('ra').textContent=a.acc+'%';$('rt').textContent=(a.timeMs/1000).toFixed(2)+'s';$('rn').textContent=a.net;
-    $('rtitle').textContent=r.best?'New personal best':'Not your best, try again';
-    $('rrank').textContent=`You are ranked #${r.rank} of ${r.total}.`;
-    show('v-res');await load();
-    if(r.rank===1&&r.best)confetti();
-  }catch{alert('Could not reach the server. Check your connection and try again.');show('v-form')}
-}
-$('again').onclick=()=>{show('v-form')};
-
-$('admin').onclick=async()=>{
-  const pin=prompt('Admin PIN');if(!pin)return;
-  if(!confirm('This deletes every score. Continue?'))return;
-  const r=await fetch('/api/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})});
-  if(r.ok){await load()}else alert('Wrong PIN.');
-};
-
-function confetti(){
-  const c=$('fx'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
-  const ps=Array.from({length:140},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,v:2+Math.random()*4,s:5+Math.random()*6,r:Math.random()*6,col:['#e0a526','#0c1f5a','#1a8f5c','#d23b3b','#5b7cfa'][Math.floor(Math.random()*5)]}));
-  let f=0;(function tick(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.col;x.fillRect(0,0,p.s,p.s*.6);x.restore()});if(++f<220)requestAnimationFrame(tick);else x.clearRect(0,0,c.width,c.height)})();
-}
-</script>
-</body>
-</html>
+http.createServer(async (req, res) => {
+  const url = req.url.split('?')[0];
+  if (url === '/api/scores' && req.method === 'GET') return json(res, 200, sorted().map(({ key, ...r }) => r));
+  if (url === '/api/score' && req.method === 'POST') {
+    const d = await body(req);
+    const name = String(d.name || '').trim().slice(0, 40), dept = String(d.dept || '').trim().slice(0, 40);
+    const timeMs = Number(d.timeMs), keys = Number(d.keys), errors = Number(d.errors);
+    if (!name || !dept || !(timeMs > 0) || !(keys >= LEN) || !(errors >= 0)) return json(res, 400, { error: 'Invalid entry' });
+    if (timeMs < 1200) return json(res, 400, { error: 'Time too fast to be valid' });
+    const wpm = (LEN / 5) / (timeMs / 60000);
+    const acc = Math.max(0, (keys - errors) / keys);
+    const net = wpm * acc;
+    const key = (name + '|' + dept).toLowerCase();
+    let row = rows.find(r => r.key === key);
+    const photo = typeof d.photo === 'string' && d.photo.startsWith('data:image/') && d.photo.length < 250e3 ? d.photo : '';
+    const attempt = { name, dept, wpm: +wpm.toFixed(1), acc: +(acc * 100).toFixed(1), timeMs: Math.round(timeMs), net: +net.toFixed(1) };
+    let best = false;
+    if (!row) { row = { key, ...attempt, photo, attempts: 1 }; rows.push(row); best = true; }
+    else { row.attempts++; if (photo) row.photo = photo; if (net > row.net) { Object.assign(row, attempt); best = true; } }
+    save();
+    return json(res, 200, { attempt, best, bestRow: row, rank: sorted().findIndex(r => r.key === key) + 1, total: rows.length });
+  }
+  if (url === '/api/reset' && req.method === 'POST') {
+    const d = await body(req);
+    if (d.pin !== PIN) return json(res, 403, { error: 'Wrong PIN' });
+    rows = []; save(); return json(res, 200, { ok: true });
+  }
+  const file = path.join(__dirname, 'public', url === '/' ? 'index.html' : url);
+  if (!file.startsWith(path.join(__dirname, 'public'))) { res.writeHead(403); return res.end(); }
+  fs.readFile(file, (e, buf) => {
+    if (e) { res.writeHead(404); return res.end('Not found'); }
+    res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream' }); res.end(buf);
+  });
+}).listen(PORT, () => console.log('GMG SpeedType running on port ' + PORT));

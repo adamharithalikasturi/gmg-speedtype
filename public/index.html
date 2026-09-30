@@ -134,15 +134,32 @@ const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 $('name').value=me.name\vert{}\vert{}'';$('dept').value=me.dept||'';
-function setAv(){const a=$('avf');a.textContent=photo?'':ini($('name').value);a.style.backgroundImage=photo?`url(${photo})`:''}
-setAv();$('name').oninput=setAv;
+
+function setAv(){
+  const a=$('avf');
+  if(photo){
+    a.textContent='';
+    a.style.backgroundImage=`url(${photo})`;
+  } else {
+    a.textContent=ini($('name').value);
+    a.style.backgroundImage='none';
+  }
+}
+setAv();
+$('name').oninput=setAv;
 
 const picInput = $('pic');
 const picBtn = $('picbtn');
-picBtn.onclick = () => picInput.click();
+
+picBtn.onclick = () => {
+  picInput.value = ''; 
+  picInput.click();
+};
+
 picInput.onchange = e => {
   const file = e.target.files[0];
   if (!file) return;
+
   const reader = new FileReader();
   reader.onload = event => {
     const img = new Image();
@@ -155,6 +172,7 @@ picInput.onchange = e => {
       const sx = (img.width - minDim) / 2;
       const sy = (img.height - minDim) / 2;
       ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 96, 96);
+      
       photo = canvas.toDataURL('image/jpeg', 0.85);
       setAv();
     };

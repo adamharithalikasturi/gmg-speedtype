@@ -9,7 +9,7 @@ let rows = []; try { rows = JSON.parse(fs.readFileSync(DB, 'utf8')); } catch {}
 const save = () => fs.writeFileSync(DB, JSON.stringify(rows));
 const types = { '.html': 'text/html', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
 const json = (res, c, o) => { res.writeHead(c, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(o)); };
-const body = req => new Promise(r => { let b = ''; req.on('data', c => { b += c; if (b.length > 500e3) req.destroy(); }); req.on('end', () => { try { r(JSON.parse(b)); } catch { r({}); } }); });
+const body = req => new Promise(r => { let b = ''; req.on('data', c => { b += c; if (b.length > 300e3) req.destroy(); }); req.on('end', () => { try { r(JSON.parse(b)); } catch { r({}); } }); });
 const sorted = () => [...rows].sort((a, b) => b.net - a.net);
 
 http.createServer(async (req, res) => {
@@ -26,7 +26,7 @@ http.createServer(async (req, res) => {
     const net = wpm * acc;
     const key = (name + '|' + dept).toLowerCase();
     let row = rows.find(r => r.key === key);
-    const photo = typeof d.photo === 'string' && d.photo.startsWith('data:image/') && d.photo.length < 250e3 ? d.photo : '';
+    const photo = typeof d.photo === 'string' && d.photo.startsWith('data:image/') && d.photo.length < 120e3 ? d.photo : '';
     const attempt = { name, dept, wpm: +wpm.toFixed(1), acc: +(acc * 100).toFixed(1), timeMs: Math.round(timeMs), net: +net.toFixed(1) };
     let best = false;
     if (!row) { row = { key, ...attempt, photo, attempts: 1 }; rows.push(row); best = true; }

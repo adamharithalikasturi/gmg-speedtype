@@ -1,10 +1,9 @@
-// GMG SpeedType server. No dependencies, just Node 16+. Run: ADMIN_PIN=yourpin node server.js
+// GMG SpeedType server. No dependencies, just Node 16+.  Run: ADMIN_PIN=yourpin node server.js
 const http = require('http'), fs = require('fs'), path = require('path');
 const PORT = process.env.PORT || 3000;
 const PIN = process.env.ADMIN_PIN || '1234';
 const DB = path.join(process.env.DATA_DIR || __dirname, 'data.json');
-const TARGET_PW = 'Welcome2GMG@2026';
-const LEN = TARGET_PW.length;
+const LEN = 'Welcome2GMG@2026'.length;
 let rows = []; try { rows = JSON.parse(fs.readFileSync(DB, 'utf8')); } catch {}
 const save = () => fs.writeFileSync(DB, JSON.stringify(rows));
 const types = { '.html': 'text/html', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
@@ -32,7 +31,7 @@ http.createServer(async (req, res) => {
     if (!row) { row = { key, ...attempt, photo, attempts: 1 }; rows.push(row); best = true; }
     else { row.attempts++; if (photo) row.photo = photo; if (net > row.net) { Object.assign(row, attempt); best = true; } }
     save();
-    return json(res, 200, { attempt, best, bestRow: row, rank: sorted().findIndex(r => r.key === key) + 1, total: rows.length });
+    return json(res, 200, { attempt, best, rank: sorted().findIndex(r => r.key === key) + 1, total: rows.length });
   }
   if (url === '/api/reset' && req.method === 'POST') {
     const d = await body(req);

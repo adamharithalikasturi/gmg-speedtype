@@ -1,261 +1,392 @@
-<script>
-const PW = 'Welcome2GMG@2026';
-const $ = id => document.getElementById(id);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GMG Fastest Fingers</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --navy: #0a192f;
+      --accent: #1e3a8a;
+      --text: #1e293b;
+      --mute: #64748b;
+      --line: #e2e8f0;
+      --ok: #16a34a;
+      --bad: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 20px; }
+    header { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto 20px; }
+    header h1 { color: var(--navy); font-size: 24px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    .panel { background: var(--card); border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    h2 { font-size: 20px; color: var(--navy); margin-bottom: 16px; }
+    label { display: block; font-size: 13px; color: var(--mute); margin-bottom: 6px; font-weight: 500; }
+    input[type="text"] { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; margin-bottom: 16px; outline: none; }
+    input[type="text"]:focus { border-color: var(--accent); }
+    .photo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .av { width: 48px; height: 48px; border-radius: 50%; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; background-size: cover; background-position: center; font-size: 18px; }
+    .btn { width: 100%; padding: 12px; background: var(--navy); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 15px; }
+    .btn:hover { opacity: 0.95; }
+    .btn-lbl { display: inline-block; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: var(--mute); font-size: 13px; font-weight: 500; }
+    .btn-lbl:hover { background: #f8fafc; color: var(--text); }
+    .hide { display: none !important; }
+    .poem { background: #f8fafc; border-left: 3px solid var(--accent); padding: 12px 16px; font-style: italic; color: var(--mute); font-size: 13px; line-height: 1.5; margin-top: 20px; border-radius: 0 8px 8px 0; }
+    
+    /* Leaderboard Table */
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); }
+    th { color: var(--mute); font-weight: 500; font-size: 12px; }
+    td.n { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+    td.n .av { width: 28px; height: 28px; font-size: 11px; }
+    .num { text-align: right; }
+    tr.me { background: #eff6ff; font-weight: 600; }
 
-let me = {};
-try {
-  me = JSON.parse(localStorage.getItem('gmgProfile') || '{}');
-} catch (e) { me = {}; }
+    /* Typing Test */
+    .target-box { font-family: monospace; font-size: 18px; padding: 16px; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 16px; letter-spacing: 1px; word-break: break-all; }
+    .target-box span.ok { color: var(--ok); background: #dcfce7; }
+    .target-box span.bad { color: var(--bad); background: #fee2e2; }
+    .target-box span.cur { border-bottom: 2px solid var(--accent); }
+    .count { font-size: 48px; text-align: center; font-weight: bold; color: var(--navy); padding: 20px 0; }
+  </style>
+</head>
+<body>
 
-let photo = me.photo || '';
-let rows = [];
-let t0 = 0, keys = 0, errors = 0, prev = '';
+  <header>
+    <h1>GMG Fastest Fingers</h1>
+    <button id="admin" style="background:none; border:none; color:var(--mute); cursor:pointer; font-size:12px;">Reset</button>
+  </header>
 
-const ini = n => (n || '').trim().split(/\s+/).map(w => w[0] || '').join('').slice(0, 2).toUpperCase() || '?';
+  <main class="grid">
+    <!-- FORM & PLAY PANEL -->
+    <section class="panel">
+      
+      <!-- FORM VIEW -->
+      <div id="v-form">
+        <h2>Enter your details</h2>
+        <label for="name">Name</label>
+        <input type="text" id="name" maxlength="40" autocomplete="off">
 
-function setAv() {
-  const a = $('avf');
-  if (!a) return;
-  if (photo) {
-    a.textContent = '';
-    a.style.backgroundImage = `url(${photo})`;
-  } else {
-    a.textContent = ini($('name').value);
-    a.style.backgroundImage = 'none';
-  }
-}
+        <label for="dept">Department</label>
+        <input type="text" id="dept" maxlength="40" autocomplete="off">
 
-// Prefill form
-if ($('name'))$('name').value = me.name || '';
-if ($('dept'))$('dept').value = me.dept || '';
-setAv();
+        <div class="photo">
+          <div class="av" id="avf">?</div>
+          <div>
+            <label for="pic" class="btn-lbl">Add photo (optional)</label>
+            <input type="file" id="pic" accept="image/*" style="display:none">
+          </div>
+        </div>
 
-if ($('name'))$('name').oninput = setAv;
+        <p class="small" id="err" style="color:var(--bad); min-height:18px; margin-bottom:10px; font-size:13px;"></p>
+        <button class="btn" id="go">Start</button>
 
-// PHOTO UPLOAD HANDLER
-const picInput = $('pic');
-const picBtn = $('picbtn');
+        <div class="poem">
+          "Hark! Welcome to the grand GMG Realm of Speed!<br>
+          In this house, we share but one heart, one hall, and one place.<br>
+          Yet, let it be known through the kingdom—we share but one sacred password.<br>
+          Let us witness whose fingers prove swift enough to claim the crown!"
+        </div>
+      </div>
 
-if (picBtn && picInput) {
-  picBtn.addEventListener('click', () => {
-    picInput.click();
-  });
+      <!-- PLAY VIEW -->
+      <div id="v-play" class="hide">
+        <div id="count" class="count">3</div>
+        <div id="typing" class="hide">
+          <label>Type the password below as fast as you can:</label>
+          <div class="target-box" id="target"></div>
+          <input type="text" id="typed" autocomplete="off" style="width:100%; padding:12px; font-size:16px;">
+        </div>
+      </div>
 
-  picInput.addEventListener('change', e => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
+      <!-- RESULT VIEW -->
+      <div id="v-res" class="hide">
+        <h2 id="rtitle">Attempt Complete</h2>
+        <p id="rrank" style="margin-bottom:16px; color:var(--mute);"></p>
 
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file (PNG or JPEG).');
-      return;
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+          <div style="background:#f8fafc; padding:12px; border-radius:8px;">
+            <div style="font-size:12px; color:var(--mute);">Speed</div>
+            <div style="font-size:20px; font-weight:bold;"><span id="cw">0</span> WPM</div>
+          </div>
+          <div style="background:#f8fafc; padding:12px; border-radius:8px;">
+            <div style="font-size:12px; color:var(--mute);">Accuracy</div>
+            <div style="font-size:20px; font-weight:bold;"><span id="ca">0</span>%</div>
+          </div>
+        </div>
+
+        <button class="btn" id="again">Try Again</button>
+      </div>
+
+    </section>
+
+    <!-- LEADERBOARD PANEL -->
+    <section class="panel">
+      <h2>Leaderboard</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Dept</th>
+            <th class="num">WPM</th>
+            <th class="num">Acc</th>
+            <th class="num">Time</th>
+            <th class="num">Score</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const PW = 'Welcome2GMG@2026';
+    const $ = id => document.getElementById(id);
+
+    let me = {};
+    try {
+      me = JSON.parse(localStorage.getItem('gmgProfile') || '{}');
+    } catch (e) { me = {}; }
+
+    let photo = me.photo || '';
+    let rows = [];
+    let t0 = 0, keys = 0, errors = 0, prev = '';
+
+    const ini = n => (n || '').trim().split(/\s+/).map(w => w[0] || '').join('').slice(0, 2).toUpperCase() || '?';
+
+    function setAv() {
+      const a = $('avf');
+      if (!a) return;
+      if (photo) {
+        a.textContent = '';
+        a.style.backgroundImage = `url(${photo})`;
+      } else {
+        a.textContent = ini($('name') ?$('name').value : '');
+        a.style.backgroundImage = 'none';
+      }
     }
 
-    const reader = new FileReader();
-    reader.onerror = () => alert('Failed to read image file.');
-    reader.onload = event => {
-      const img = new Image();
-      img.onerror = () => alert('Invalid image file format.');
-      img.onload = () => {
+    // Prefill form
+    if ($('name'))$('name').value = me.name || '';
+    if ($('dept'))$('dept').value = me.dept || '';
+    setAv();
+
+    if ($('name'))$('name').oninput = setAv;
+
+    // NATIVE LABEL PHOTO UPLOAD HANDLER
+    const picInput = $('pic');
+    if (picInput) {
+      picInput.addEventListener('change', e => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file.');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onerror = () => alert('Failed to read image file.');
+        reader.onload = event => {
+          const img = new Image();
+          img.onerror = () => alert('Invalid image format.');
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = 96;
+              canvas.height = 96;
+              const ctx = canvas.getContext('2d');
+              
+              const minDim = Math.min(img.width, img.height);
+              const sx = (img.width - minDim) / 2;
+              const sy = (img.height - minDim) / 2;
+              
+              ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 96, 96);
+              
+              photo = canvas.toDataURL('image/jpeg', 0.80);
+              setAv();
+            } catch (err) {
+              console.error('Canvas processing error:', err);
+              alert('Could not process image.');
+            }
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function show(v) {
+      ['v-form', 'v-play', 'v-res'].forEach(x => {
+        const el = $(x);
+        if (el) el.classList.toggle('hide', x !== v);
+      });
+    }
+
+    const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const avHTML = (r, cls = '') => r.photo ? `<div class="av ${cls}" style="background-image:url(${r.photo})"></div>` : `<div class="av ${cls}">${ini(r.name)}</div>`;
+
+    async function load() {
+      try {
+        const res = await fetch('/api/scores');
+        if (res.ok) {
+          rows = await res.json();
+          draw();
+        }
+      } catch (err) {
+        console.error('Failed to load leaderboard:', err);
+      }
+    }
+
+    function draw() {
+      const top = [...rows].sort((a, b) => b.net - a.net);
+      if ($('rows')) {$('rows').innerHTML = top.map((r, i) => `
+          <tr class="${r.name === me.name && r.dept === me.dept ? 'me' : ''}">
+            <td>${i + 1}</td>
+            <td class="n">${avHTML(r)}${esc(r.name)}</td>
+            <td>${esc(r.dept)}</td>
+            <td class="num">${r.wpm}</td>
+            <td class="num">${r.acc}%</td>
+            <td class="num">${(r.timeMs / 1000).toFixed(2)}s</td>
+            <td class="num"><b>${r.net}</b></td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    load();
+    setInterval(load, 4000);
+
+    if ($('go')) {$('go').onclick = () => {
+        const name = $('name').value.trim();
+        const dept = $('dept').value.trim();
+        
+        if (!name || !dept) {
+          if ($('err'))$('err').textContent = 'Enter your name and department to start.';
+          return;
+        }
+        
+        if ($('err'))$('err').textContent = '';
+        me = { name, dept, photo };
+        
         try {
-          const canvas = document.createElement('canvas');
-          canvas.width = 96;
-          canvas.height = 96;
-          const ctx = canvas.getContext('2d');
-          
-          const minDim = Math.min(img.width, img.height);
-          const sx = (img.width - minDim) / 2;
-          const sy = (img.height - minDim) / 2;
-          
-          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 96, 96);
-          
-          photo = canvas.toDataURL('image/jpeg', 0.80);
-          setAv();
-        } catch (err) {
-          console.error('Canvas error:', err);
-          alert('Could not process image.');
+          localStorage.setItem('gmgProfile', JSON.stringify(me));
+        } catch (e) {
+          console.warn('LocalStorage save failed:', e);
+        }
+        
+        draw();
+        show('v-play');
+        if ($('typing'))$('typing').classList.add('hide');
+        if ($('count'))$('count').classList.remove('hide');
+        
+        let n = 3;
+        if ($('count'))$('count').textContent = n;
+        const iv = setInterval(() => {
+          n--;
+          if (n > 0) {
+            if ($('count'))$('count').textContent = n;
+            return;
+          }
+          clearInterval(iv);
+          begin();
+        }, 900);
+      };
+    }
+
+    function renderTarget(v) {
+      if (!$('target')) return;
+      $('target').innerHTML = [...PW].map((c, i) => {
+        let k = '';
+        if (i < v.length) k = v[i] === c ? 'ok' : 'bad';
+        else if (i === v.length) k = 'cur';
+        return `<span class="${k}">${esc(c)}</span>`;
+      }).join('');
+    }
+
+    function begin() {
+      if ($('count'))$('count').classList.add('hide');
+      if ($('typing'))$('typing').classList.remove('hide');
+      const t = $('typed');
+      if (!t) return;
+      t.value = '';
+      prev = '';
+      keys = errors = 0;
+      t0 = 0;
+      renderTarget('');
+      t.focus();
+    }
+
+    if ($('typed')) {
+      $('typed').addEventListener('paste', e => e.preventDefault());$('typed').addEventListener('input', e => {
+        const t = e.target;
+        const v = t.value;
+        if (!t0) t0 = performance.now();
+        if (v.length > prev.length) {
+          for (let i = prev.length; i < v.length; i++) {
+            keys++;
+            if (v[i] !== PW[i]) errors++;
+          }
+        }
+        prev = v;
+        renderTarget(v);
+        if (v === PW) {
+          t.blur();
+          finish();
+        }
+      });
+    }
+
+    async function finish() {
+      const timeMs = performance.now() - t0;
+      try {
+        const res = await fetch('/api/score', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...me, timeMs, keys, errors })
+        });
+        const r = await res.json();
+        if (r.error) {
+          alert(r.error);
+          show('v-form');
+          return;
+        }
+        const a = r.attempt;
+        if ($('cw'))$('cw').textContent = a.wpm;
+        if ($('ca'))$('ca').textContent = a.acc + '%';
+        if ($('rtitle'))$('rtitle').textContent = r.best ? 'New Personal Best!' : 'Attempt Complete';
+        if ($('rrank'))$('rrank').textContent = `You are ranked #${r.rank} of ${r.total}.`;
+        
+        show('v-res');
+        await load();
+      } catch (err) {
+        alert('Could not reach the server.');
+        show('v-form');
+      }
+    }
+
+    if ($('again'))$('again').onclick = () => show('v-form');
+
+    if ($('admin')) {$('admin').onclick = async () => {
+        const pin = prompt('Admin PIN');
+        if (!pin) return;
+        if (!confirm('This deletes every score. Continue?')) return;
+        const r = await fetch('/api/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin })
+        });
+        if (r.ok) {
+          await load();
+        } else {
+          alert('Wrong PIN.');
         }
       };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function show(v) {
-  ['v-form', 'v-play', 'v-res'].forEach(x => {
-    const el = $(x);
-    if (el) el.classList.toggle('hide', x !== v);
-  });
-}
-
-const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const avHTML = (r, cls = '') => r.photo ? `<div class="av ${cls}" style="background-image:url(${r.photo})"></div>` : `<div class="av ${cls}">${ini(r.name)}</div>`;
-
-async function load() {
-  try {
-    const res = await fetch('/api/scores');
-    if (res.ok) {
-      rows = await res.json();
-      draw();
     }
-  } catch (err) {
-    console.error('Failed to load leaderboard:', err);
-  }
-}
-
-function draw() {
-  const top = [...rows].sort((a, b) => b.net - a.net);
-  const mk = (r, i) => `<div class="pod p${i + 1}">${avHTML(r)}<div class="nm">${esc(r.name)}</div><div class="sc">${r.net} pts</div><div class="blk">${i + 1}</div></div>`;
-  const order = [1, 0, 2].filter(i => top[i]);
-  
-  if ($('podium'))$('podium').innerHTML = order.map(i => mk(top[i], i)).join('');
-  if ($('empty'))$('empty').classList.toggle('hide', top.length > 0);
-  if ($('rows')) {$('rows').innerHTML = top.map((r, i) => `
-      <tr class="${r.name === me.name && r.dept === me.dept ? 'me' : ''}">
-        <td>${i + 1}</td>
-        <td class="n">${avHTML(r)}${esc(r.name)}</td>
-        <td>${esc(r.dept)}</td>
-        <td class="num">${r.wpm}</td>
-        <td class="num">${r.acc}%</td>
-        <td class="num">${(r.timeMs / 1000).toFixed(2)}s</td>
-        <td class="num"><b>${r.net}</b></td>
-      </tr>
-    `).join('');
-  }
-}
-
-load();
-setInterval(load, 4000);
-
-if ($('go')) {$('go').onclick = () => {
-    const name = $('name').value.trim();
-    const dept = $('dept').value.trim();
-    
-    if (!name || !dept) {
-      if ($('err'))$('err').textContent = 'Enter your name and department to start.';
-      return;
-    }
-    
-    if ($('err'))$('err').textContent = '';
-    me = { name, dept, photo };
-    
-    try {
-      localStorage.setItem('gmgProfile', JSON.stringify(me));
-    } catch (e) {
-      console.warn('LocalStorage save failed:', e);
-    }
-    
-    draw();
-    show('v-play');
-    if ($('typing'))$('typing').classList.add('hide');
-    if ($('count'))$('count').classList.remove('hide');
-    
-    let n = 3;
-    if ($('count'))$('count').textContent = n;
-    const iv = setInterval(() => {
-      n--;
-      if (n > 0) {
-        if ($('count'))$('count').textContent = n;
-        return;
-      }
-      clearInterval(iv);
-      begin();
-    }, 900);
-  };
-}
-
-function renderTarget(v) {
-  if (!$('target')) return;
-  $('target').innerHTML = [...PW].map((c, i) => {
-    let k = '';
-    if (i < v.length) k = v[i] === c ? 'ok' : 'bad';
-    else if (i === v.length) k = 'cur';
-    return `<span class="${k}">${esc(c)}</span>`;
-  }).join('');
-}
-
-function begin() {
-  if ($('count'))$('count').classList.add('hide');
-  if ($('typing'))$('typing').classList.remove('hide');
-  const t = $('typed');
-  if (!t) return;
-  t.value = '';
-  prev = '';
-  keys = errors = 0;
-  t0 = 0;
-  renderTarget('');
-  t.focus();
-}
-
-if ($('typed')) {
-  $('typed').addEventListener('paste', e => e.preventDefault());$('typed').addEventListener('input', e => {
-    const t = e.target;
-    const v = t.value;
-    if (!t0) t0 = performance.now();
-    if (v.length > prev.length) {
-      for (let i = prev.length; i < v.length; i++) {
-        keys++;
-        if (v[i] !== PW[i]) errors++;
-      }
-    }
-    prev = v;
-    renderTarget(v);
-    if (v === PW) {
-      t.blur();
-      finish();
-    }
-  });
-}
-
-async function finish() {
-  const timeMs = performance.now() - t0;
-  try {
-    const res = await fetch('/api/score', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...me, timeMs, keys, errors })
-    });
-    const r = await res.json();
-    if (r.error) {
-      alert(r.error);
-      show('v-form');
-      return;
-    }
-    const a = r.attempt;
-    const b = r.bestRow || a;
-    if ($('cw'))$('cw').textContent = a.wpm;
-    if ($('ca'))$('ca').textContent = a.acc + '%';
-    if ($('cn'))$('cn').textContent = a.net;
-    if ($('rw'))$('rw').textContent = b.wpm;
-    if ($('ra'))$('ra').textContent = b.acc + '%';
-    if ($('rn'))$('rn').textContent = b.net;
-    if ($('rtitle'))$('rtitle').textContent = r.best ? 'New Personal Best!' : 'Attempt Complete';
-    if ($('rrank'))$('rrank').textContent = `You are ranked #${r.rank} of ${r.total}.`;
-    
-    show('v-res');
-    await load();
-  } catch (err) {
-    alert('Could not reach the server. Check your connection and try again.');
-    show('v-form');
-  }
-}
-
-if ($('again'))$('again').onclick = () => show('v-form');
-
-if ($('admin')) {$('admin').onclick = async () => {
-    const pin = prompt('Admin PIN');
-    if (!pin) return;
-    if (!confirm('This deletes every score. Continue?')) return;
-    const r = await fetch('/api/reset', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin })
-    });
-    if (r.ok) {
-      await load();
-    } else {
-      alert('Wrong PIN.');
-    }
-  };
-}
-</script>
+  </script>
+</body>
+</html>

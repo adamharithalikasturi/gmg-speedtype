@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GMG Password Sprint</title>
+<title>GMG Fastest Fingers</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#0c1f5a;--ink:#14213d;--bg:#f4f6fb;--card:#fff;--line:#dfe4f0;--gold:#e0a526;--ok:#1a8f5c;--bad:#d23b3b;--mute:#6b7693}
@@ -47,7 +47,7 @@ td{padding:9px 6px;border-bottom:1px solid var(--line)}
 tr.me{background:#fff7e0}
 td.n{display:flex;align-items:center;gap:8px}td.n .av{width:28px;height:28px;font-size:11px}
 .num{text-align:right;font-variant-numeric:tabular-nums}
-.scroll-poem{background:#fdfaf3;border:1px solid #e2d9c8;border-left:4px solid var(--gold);border-radius:8px;padding:16px 20px;margin-top:20px;font-family:'Fraunces',serif;font-style:italic;color:#3c3326;line-height:1.6;font-size:14px;box-shadow:inset 0 0 10px rgba(0,0,0,0.02)}
+.scroll-poem{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:10px;padding:16px 20px;margin-top:20px;font-family:'Fraunces',serif;font-style:italic;color:var(--navy);line-height:1.6;font-size:14px}
 .scroll-poem p{margin:0 0 8px}.scroll-poem p:last-child{margin:0;font-weight:600;font-style:normal;color:var(--navy)}
 canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
 @media(prefers-reduced-motion:reduce){canvas#fx{display:none}}
@@ -57,7 +57,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
 <canvas id="fx"></canvas>
 <header>
   <img src="logo.png" alt="GMG">
-  <h1>Password Sprint</h1>
+  <h1>Fastest Fingers</h1>
   <button id="admin">Admin reset</button>
 </header>
 <main>
@@ -66,8 +66,13 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
       <h2>Enter your details</h2>
       <label for="name">Name</label><input type="text" id="name" maxlength="40" autocomplete="off">
       <label for="dept">Department</label><input type="text" id="dept" maxlength="40" autocomplete="off">
-      <div class="photo"><div class="av" id="avf">?</div>
-        <div><input type="file" id="pic" accept="image/*" class="hide"><button class="small" id="picbtn" type="button" style="border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;cursor:pointer">Add photo (optional)</button></div></div>
+      <div class="photo">
+        <div class="av" id="avf">?</div>
+        <div>
+          <input type="file" id="pic" accept="image/*" style="display:none">
+          <button class="small" id="picbtn" type="button" style="border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;cursor:pointer;color:var(--mute)">Add photo (optional)</button>
+        </div>
+      </div>
       <p class="small" id="err" style="color:var(--bad);min-height:18px"></p>
       <button class="btn" id="go">Start</button>
       <p class="small">You get one timed attempt per round. Your best score holds your place upon the high realm.</p>
@@ -129,9 +134,53 @@ const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 $('name').value=me.name\vert{}\vert{}'';$('dept').value=me.dept||'';
-function setAv(){const a=$('avf');a.textContent=photo?'':ini($('name').value);a.style.backgroundImage=photo?`url(${photo})`:''}
-setAv();$('name').oninput=setAv;
-$('picbtn').onclick=()=>$('pic').click();$('pic').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=96;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,96,96);photo=c.toDataURL('image/jpeg',.8);setAv()};im.src=URL.createObjectURL(f)};
+
+function setAv(){
+  const a=$('avf');
+  if(photo){
+    a.textContent='';
+    a.style.backgroundImage=`url(${photo})`;
+  } else {
+    a.textContent=ini($('name').value);
+    a.style.backgroundImage='none';
+  }
+}
+setAv();
+$('name').oninput=setAv;
+
+const picInput = $('pic');
+const picBtn = $('picbtn');
+
+picBtn.onclick = () => {
+  picInput.value = ''; 
+  picInput.click();
+};
+
+picInput.onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = event => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 96;
+      canvas.height = 96;
+      const ctx = canvas.getContext('2d');
+      const minDim = Math.min(img.width, img.height);
+      const sx = (img.width - minDim) / 2;
+      const sy = (img.height - minDim) / 2;
+      ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 96, 96);
+      
+      photo = canvas.toDataURL('image/jpeg', 0.85);
+      setAv();
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
 function show(v){['v-form','v-play','v-res'].forEach(x=>$(x).classList.toggle('hide',x!==v))}
 
 async function load(){try{rows=await (await fetch('/api/scores')).json();draw()}catch{}}

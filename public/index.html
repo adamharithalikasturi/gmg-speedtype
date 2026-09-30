@@ -28,9 +28,11 @@ input:focus,button:focus-visible{outline:2px solid var(--navy);outline-offset:1p
 .target{font:600 28px/1.3 "SF Mono",Consolas,monospace;letter-spacing:1px;background:var(--bg);border-radius:10px;padding:18px;margin:10px 0;text-align:center;word-break:break-all}
 .target span.ok{color:var(--ok)}.target span.bad{color:#fff;background:var(--bad);border-radius:3px}.target span.cur{box-shadow:inset 0 -3px var(--navy)}
 #count{font:800 120px Fraunces,serif;color:var(--navy);text-align:center;line-height:1.2}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
-.stat{background:var(--bg);border-radius:10px;padding:12px;text-align:center}
-.stat b{display:block;font:800 26px Fraunces,serif;color:var(--navy)}
+.stats-group{margin:16px 0}
+.stats-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--mute);margin-bottom:6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font:800 22px Fraunces,serif;color:var(--navy)}
 .hide{display:none!important}
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:8px 0 22px;min-height:190px}
 .pod{flex:1;max-width:130px;text-align:center}
@@ -45,6 +47,8 @@ td{padding:9px 6px;border-bottom:1px solid var(--line)}
 tr.me{background:#fff7e0}
 td.n{display:flex;align-items:center;gap:8px}td.n .av{width:28px;height:28px;font-size:11px}
 .num{text-align:right;font-variant-numeric:tabular-nums}
+.scroll-poem{background:#fdfaf3;border:1px solid #e2d9c8;border-left:4px solid var(--gold);border-radius:8px;padding:16px 20px;margin-top:20px;font-family:'Fraunces',serif;font-style:italic;color:#3c3326;line-height:1.6;font-size:14px;box-shadow:inset 0 0 10px rgba(0,0,0,0.02)}
+.scroll-poem p{margin:0 0 8px}.scroll-poem p:last-child{margin:0;font-weight:600;font-style:normal;color:var(--navy)}
 canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
 @media(prefers-reduced-motion:reduce){canvas#fx{display:none}}
 </style>
@@ -66,7 +70,14 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
         <div><input type="file" id="pic" accept="image/*" class="hide"><button class="small" id="picbtn" type="button" style="border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;cursor:pointer">Add photo (optional)</button></div></div>
       <p class="small" id="err" style="color:var(--bad);min-height:18px"></p>
       <button class="btn" id="go">Start</button>
-      <p class="small">You get one timed attempt per round. Retry as often as you like, and your best score counts.</p>
+      <p class="small">You get one timed attempt per round. Your best score holds your place upon the high realm.</p>
+      
+      <div class="scroll-poem">
+        <p>“Hark! Welcome to the grand GMG Realm of Speed!</p>
+        <p>In this house, we share but one heart, one hall, and one place.</p>
+        <p>Yet, let it be known through the kingdom—we share but one sacred password.</p>
+        <p>Let us witness whose fingers prove swift enough to claim the crown!”</p>
+      </div>
     </div>
     <div id="v-play" class="hide">
       <div id="count" class="hide">3</div>
@@ -74,14 +85,31 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
         <h2>Type the password</h2>
         <div class="target" id="target"></div>
         <input type="text" id="typed" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the password here" style="font:inherit;font-size:20px;text-align:center">
-        <p class="small">The clock started on your first keystroke. Typos count against accuracy.</p>
+        <p class="small">The clock started on your first keystroke. Correct all typos to finish!</p>
       </div>
     </div>
     <div id="v-res" class="hide">
       <h2 id="rtitle">Done</h2>
-      <div class="stats"><div class="stat"><b id="rw">0</b>WPM</div><div class="stat"><b id="ra">0%</b>Accuracy</div><div class="stat"><b id="rt">0s</b>Time</div></div>
-      <p id="rrank" style="font-weight:600;font-size:17px"></p>
-      <p class="small">Score: <b id="rn"></b> (WPM × accuracy)</p>
+      
+      <div class="stats-group">
+        <div class="stats-title">This Attempt</div>
+        <div class="stats">
+          <div class="stat"><b id="cw">0</b>WPM</div>
+          <div class="stat"><b id="ca">0%</b>Accuracy</div>
+          <div class="stat"><b id="cn">0</b>Score</div>
+        </div>
+      </div>
+
+      <div class="stats-group">
+        <div class="stats-title">Personal Best</div>
+        <div class="stats">
+          <div class="stat"><b id="rw">0</b>WPM</div>
+          <div class="stat"><b id="ra">0%</b>Accuracy</div>
+          <div class="stat"><b id="rn">0</b>Score</div>
+        </div>
+      </div>
+
+      <p id="rrank" style="font-weight:600;font-size:16px;margin-top:14px"></p>
       <button class="btn" id="again">Try again</button>
     </div>
   </section>
@@ -100,11 +128,10 @@ let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'',
 const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-$('name').value=me.name||'';$('dept').value=me.dept||'';
+$('name').value=me.name\vert{}\vert{}'';$('dept').value=me.dept||'';
 function setAv(){const a=$('avf');a.textContent=photo?'':ini($('name').value);a.style.backgroundImage=photo?`url(${photo})`:''}
 setAv();$('name').oninput=setAv;
-$('picbtn').onclick=()=>$('pic').click();
-$('pic').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=96;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,96,96);photo=c.toDataURL('image/jpeg',.8);setAv()};im.src=URL.createObjectURL(f)};
+$('picbtn').onclick=()=>$('pic').click();$('pic').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=96;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,96,96);photo=c.toDataURL('image/jpeg',.8);setAv()};im.src=URL.createObjectURL(f)};
 function show(v){['v-form','v-play','v-res'].forEach(x=>$(x).classList.toggle('hide',x!==v))}
 
 async function load(){try{rows=await (await fetch('/api/scores')).json();draw()}catch{}}
@@ -112,15 +139,13 @@ function draw(){
   const top=[...rows].sort((a,b)=>b.net-a.net), mk=(r,i)=>`<div class="pod p${i+1}">${avHTML(r)}<div class="nm">${esc(r.name)}</div><div class="sc">${r.net} pts</div><div class="blk">${i+1}</div></div>`;
   const order=[1,0,2].filter(i=>top[i]);
   $('podium').innerHTML=order.map(i=>mk(top[i],i)).join('');
-  $('empty').classList.toggle('hide',top.length>0);
-  $('rows').innerHTML=top.map((r,i)=>`<tr class="${r.name===me.name&&r.dept===me.dept?'me':''}"><td>${i+1}</td><td class="n">${avHTML(r)}${esc(r.name)}</td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join('');
+  $('empty').classList.toggle('hide',top.length>0);$('rows').innerHTML=top.map((r,i)=>`<tr class="${r.name===me.name&&r.dept===me.dept?'me':''}"><td>${i+1}</td><td class="n">${avHTML(r)}${esc(r.name)}</td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join('');
 }
 load();setInterval(load,4000);
 
 $('go').onclick=()=>{
   const name=$('name').value.trim(),dept=$('dept').value.trim();
-  if(!name||!dept){$('err').textContent='Enter your name and department to start.';return}
-  $('err').textContent='';me={name,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
+  if(!name||!dept){$('err').textContent='Enter your name and department to start.';return}$('err').textContent='';me={name,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
   show('v-play');$('typing').classList.add('hide');$('count').classList.remove('hide');
   let n=3;$('count').textContent=n;
   const iv=setInterval(()=>{n--;if(n>0){$('count').textContent=n;return}clearInterval(iv);begin()},900);
@@ -132,22 +157,22 @@ function begin(){
   $('count').classList.add('hide');$('typing').classList.remove('hide');
   const t=$('typed');t.value='';prev='';keys=errors=0;t0=0;renderTarget('');t.focus();
 }
-$('typed').addEventListener('paste',e=>e.preventDefault());
-$('typed').addEventListener('input',e=>{
+$('typed').addEventListener('paste',e=>e.preventDefault());$('typed').addEventListener('input',e=>{
   const t=e.target,v=t.value;
   if(!t0)t0=performance.now();
   if(v.length>prev.length){for(let i=prev.length;i<v.length;i++){keys++;if(v[i]!==PW[i])errors++}}
   prev=v;renderTarget(v);
-  if(v.length>=PW.length){t.blur();finish()}
+  if(v===PW){t.blur();finish()}
 });
 async function finish(){
   const timeMs=performance.now()-t0;
   try{
     const r=await (await fetch('/api/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...me,timeMs,keys,errors})})).json();
     if(r.error){alert(r.error);show('v-form');return}
-    const a=r.attempt;
-    $('rw').textContent=a.wpm;$('ra').textContent=a.acc+'%';$('rt').textContent=(a.timeMs/1000).toFixed(2)+'s';$('rn').textContent=a.net;
-    $('rtitle').textContent=r.best?'New personal best':'Not your best, try again';
+    const a=r.attempt, b=r.bestRow||a;
+    $('cw').textContent=a.wpm;$('ca').textContent=a.acc+'\%';$('cn').textContent=a.net;
+    $('rw').textContent=b.wpm;$('ra').textContent=b.acc+'\%';$('rn').textContent=b.net;
+    $('rtitle').textContent=r.best?'New Personal Best!':'Attempt Complete';
     $('rrank').textContent=`You are ranked #${r.rank} of ${r.total}.`;
     show('v-res');await load();
     if(r.rank===1&&r.best)confetti();

@@ -66,8 +66,13 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
       <h2>Enter your details</h2>
       <label for="name">Name</label><input type="text" id="name" maxlength="40" autocomplete="off">
       <label for="dept">Department</label><input type="text" id="dept" maxlength="40" autocomplete="off">
-      <div class="photo"><div class="av" id="avf">?</div>
-        <div><input type="file" id="pic" accept="image/*" class="hide"><button class="small" id="picbtn" type="button" style="border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;cursor:pointer">Add photo (optional)</button></div></div>
+      <div class="photo">
+        <div class="av" id="avf">?</div>
+        <div>
+          <input type="file" id="pic" accept="image/*" style="display:none">
+          <button class="small" id="picbtn" type="button" style="border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;cursor:pointer;color:var(--mute)">Add photo (optional)</button>
+        </div>
+      </div>
       <p class="small" id="err" style="color:var(--bad);min-height:18px"></p>
       <button class="btn" id="go">Start</button>
       <p class="small">You get one timed attempt per round. Your best score holds your place upon the high realm.</p>
@@ -131,7 +136,33 @@ const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&qu
 $('name').value=me.name\vert{}\vert{}'';$('dept').value=me.dept||'';
 function setAv(){const a=$('avf');a.textContent=photo?'':ini($('name').value);a.style.backgroundImage=photo?`url(${photo})`:''}
 setAv();$('name').oninput=setAv;
-$('picbtn').onclick=()=>$('pic').click();$('pic').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=96;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,96,96);photo=c.toDataURL('image/jpeg',.8);setAv()};im.src=URL.createObjectURL(f)};
+
+const picInput = $('pic');
+const picBtn = $('picbtn');
+picBtn.onclick = () => picInput.click();
+picInput.onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = event => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 96;
+      canvas.height = 96;
+      const ctx = canvas.getContext('2d');
+      const minDim = Math.min(img.width, img.height);
+      const sx = (img.width - minDim) / 2;
+      const sy = (img.height - minDim) / 2;
+      ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 96, 96);
+      photo = canvas.toDataURL('image/jpeg', 0.85);
+      setAv();
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
 function show(v){['v-form','v-play','v-res'].forEach(x=>$(x).classList.toggle('hide',x!==v))}
 
 async function load(){try{rows=await (await fetch('/api/scores')).json();draw()}catch{}}

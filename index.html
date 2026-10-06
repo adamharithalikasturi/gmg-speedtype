@@ -133,8 +133,7 @@ let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'',
 const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-$('name').value=me.name\vert{}\vert{}'';$('dept').value=me.dept||'';
-
+$('name').value=me.name||'';$('dept').value=me.dept||'';
 function setAv(){
   const a=$('avf');
   if(photo){

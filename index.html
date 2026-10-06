@@ -76,7 +76,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
       <p class="small" id="err" style="color:var(--bad);min-height:18px"></p>
       <button class="btn" id="go">Start</button>
       <p class="small">You get one timed attempt per round. Your best score holds your place upon the high realm.</p>
-      
+
       <div class="scroll-poem">
         <p>“Hark! Welcome to the grand GMG Realm of Speed!</p>
         <p>In this house, we share but one heart, one hall, and one place.</p>
@@ -95,7 +95,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
     </div>
     <div id="v-res" class="hide">
       <h2 id="rtitle">Done</h2>
-      
+
       <div class="stats-group">
         <div class="stats-title">This Attempt</div>
         <div class="stats">
@@ -133,7 +133,7 @@ let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'',
 const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-$('name').value=me.name\vert{}\vert{}'';$('dept').value=me.dept||'';
+$('name').value=me.name||'';$('dept').value=me.dept||'';
 
 function setAv(){
   const a=$('avf');
@@ -152,7 +152,7 @@ const picInput = $('pic');
 const picBtn = $('picbtn');
 
 picBtn.onclick = () => {
-  picInput.value = ''; 
+  picInput.value = '';
   picInput.click();
 };
 
@@ -172,7 +172,7 @@ picInput.onchange = e => {
       const sx = (img.width - minDim) / 2;
       const sy = (img.height - minDim) / 2;
       ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 96, 96);
-      
+
       photo = canvas.toDataURL('image/jpeg', 0.85);
       setAv();
     };
@@ -194,7 +194,8 @@ load();setInterval(load,4000);
 
 $('go').onclick=()=>{
   const name=$('name').value.trim(),dept=$('dept').value.trim();
-  if(!name||!dept){$('err').textContent='Enter your name and department to start.';return}$('err').textContent='';me={name,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
+  if(!name||!dept){$('err').textContent='Enter your name and department to start.';return}
+  $('err').textContent='';me={name,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
   show('v-play');$('typing').classList.add('hide');$('count').classList.remove('hide');
   let n=3;$('count').textContent=n;
   const iv=setInterval(()=>{n--;if(n>0){$('count').textContent=n;return}clearInterval(iv);begin()},900);
@@ -206,7 +207,8 @@ function begin(){
   $('count').classList.add('hide');$('typing').classList.remove('hide');
   const t=$('typed');t.value='';prev='';keys=errors=0;t0=0;renderTarget('');t.focus();
 }
-$('typed').addEventListener('paste',e=>e.preventDefault());$('typed').addEventListener('input',e=>{
+$('typed').addEventListener('paste',e=>e.preventDefault());
+$('typed').addEventListener('input',e=>{
   const t=e.target,v=t.value;
   if(!t0)t0=performance.now();
   if(v.length>prev.length){for(let i=prev.length;i<v.length;i++){keys++;if(v[i]!==PW[i])errors++}}
@@ -219,8 +221,8 @@ async function finish(){
     const r=await (await fetch('/api/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...me,timeMs,keys,errors})})).json();
     if(r.error){alert(r.error);show('v-form');return}
     const a=r.attempt, b=r.bestRow||a;
-    $('cw').textContent=a.wpm;$('ca').textContent=a.acc+'\%';$('cn').textContent=a.net;
-    $('rw').textContent=b.wpm;$('ra').textContent=b.acc+'\%';$('rn').textContent=b.net;
+    $('cw').textContent=a.wpm;$('ca').textContent=a.acc+'%';$('cn').textContent=a.net;
+    $('rw').textContent=b.wpm;$('ra').textContent=b.acc+'%';$('rn').textContent=b.net;
     $('rtitle').textContent=r.best?'New Personal Best!':'Attempt Complete';
     $('rrank').textContent=`You are ranked #${r.rank} of ${r.total}.`;
     show('v-res');await load();

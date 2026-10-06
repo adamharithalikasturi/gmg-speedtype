@@ -43,7 +43,7 @@ export default async function handler(req, res) {
       row.attempts++;
       if (photo) row.photo = photo;
       if (net > row.net) {
-        Object.assign(row, attempt);
+        Object.assign(row, { key, ...attempt });
         best = true;
       }
     }

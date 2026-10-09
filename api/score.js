@@ -1,7 +1,11 @@
 import { kv } from '@vercel/kv';
+import { createHash } from 'crypto';
 
 const TARGET_PW = 'Welcome2GMG@2026';
 const LEN = TARGET_PW.length;
+
+// Short anonymous id (same helper as scores.js / delete.js)
+const rowId = key => createHash('sha256').update('gmg:' + key).digest('hex').slice(0, 12);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -37,6 +41,10 @@ export default async function handler(req, res) {
     const raw = await kv.get('gmg_scores');
     let rows = Array.isArray(raw) ? raw : [];
 
+    // who was #1 before this attempt (used to detect "new #1" in the live feed)
+    const prevTop = [...rows].sort((a, b) => b.net - a.net)[0];
+    const prevTopKey = prevTop ? prevTop.key : null;
+
     // also matches older rows that were saved before email became the key
     let row = rows.find(r => r.key === key || (r.email && r.email === email));
     let best = false;
@@ -63,6 +71,22 @@ export default async function handler(req, res) {
 
     const sorted = [...rows].sort((a, b) => b.net - a.net);
     const rank = sorted.findIndex(r => r.key === row.key) + 1;
+
+    // Live feed event (failure here must never break the score itself)
+    try {
+      const rawFeed = await kv.get('gmg_feed');
+      const feed = Array.isArray(rawFeed) ? rawFeed : [];
+      feed.unshift({
+        ts: Date.now(),
+        id: rowId(row.key),
+        name,
+        dept,
+        net: attempt.net,
+        pb: best,
+        top: best && rank === 1 && prevTopKey !== row.key
+      });
+      await kv.set('gmg_feed', feed.slice(0, 40));
+    } catch (e) { /* ignore */ }
 
     const { key: _k, email: _e, ...bestRow } = row;
     return res.status(200).json({ attempt, best, bestRow, rank, total: rows.length });

@@ -27,7 +27,8 @@ export default async function handler(req, res) {
   const wpm = (LEN / 5) / (timeMs / 60000);
   const acc = Math.max(0, (keys - errors) / keys);
   const net = wpm * acc;
-  const key = (name + '|' + dept).toLowerCase();
+  // Email is the unique ID: one leaderboard spot per email
+  const key = email;
 
   const photo = typeof d.photo === 'string' && d.photo.startsWith('data:image/') && d.photo.length < 250e3 ? d.photo : '';
   const attempt = { name, dept, wpm: +wpm.toFixed(1), acc: +(acc * 100).toFixed(1), timeMs: Math.round(timeMs), net: +net.toFixed(1) };
@@ -36,7 +37,8 @@ export default async function handler(req, res) {
     const raw = await kv.get('gmg_scores');
     let rows = Array.isArray(raw) ? raw : [];
 
-    let row = rows.find(r => r.key === key);
+    // also matches older rows that were saved before email became the key
+    let row = rows.find(r => r.key === key || (r.email && r.email === email));
     let best = false;
 
     if (!row) {
@@ -50,13 +52,17 @@ export default async function handler(req, res) {
       if (net > row.net) {
         Object.assign(row, attempt);
         best = true;
+      } else {
+        // keep name/department current even if this attempt wasn't a new best
+        row.name = name;
+        row.dept = dept;
       }
     }
 
     await kv.set('gmg_scores', rows);
 
     const sorted = [...rows].sort((a, b) => b.net - a.net);
-    const rank = sorted.findIndex(r => r.key === key) + 1;
+    const rank = sorted.findIndex(r => r.key === row.key) + 1;
 
     const { key: _k, email: _e, ...bestRow } = row;
     return res.status(200).json({ attempt, best, bestRow, rank, total: rows.length });

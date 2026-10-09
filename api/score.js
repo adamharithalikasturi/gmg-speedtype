@@ -9,12 +9,16 @@ export default async function handler(req, res) {
   const d = req.body || {};
   const name = String(d.name || '').trim().slice(0, 40);
   const dept = String(d.dept || '').trim().slice(0, 40);
+  const email = String(d.email || '').trim().toLowerCase().slice(0, 80);
   const timeMs = Number(d.timeMs);
   const keys = Number(d.keys);
   const errors = Number(d.errors);
 
   if (!name || !dept || !(timeMs > 0) || !(keys >= LEN) || !(errors >= 0)) {
     return res.status(400).json({ error: 'Invalid entry' });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Invalid email' });
   }
   if (timeMs < 1200) {
     return res.status(400).json({ error: 'Time too fast to be valid' });
@@ -36,14 +40,15 @@ export default async function handler(req, res) {
     let best = false;
 
     if (!row) {
-      row = { key, ...attempt, photo, attempts: 1 };
+      row = { key, email, ...attempt, photo, attempts: 1 };
       rows.push(row);
       best = true;
     } else {
       row.attempts++;
+      row.email = email;
       if (photo) row.photo = photo;
       if (net > row.net) {
-        Object.assign(row, { key, ...attempt });
+        Object.assign(row, attempt);
         best = true;
       }
     }
@@ -53,7 +58,8 @@ export default async function handler(req, res) {
     const sorted = [...rows].sort((a, b) => b.net - a.net);
     const rank = sorted.findIndex(r => r.key === key) + 1;
 
-    return res.status(200).json({ attempt, best, bestRow: row, rank, total: rows.length });
+    const { key: _k, email: _e, ...bestRow } = row;
+    return res.status(200).json({ attempt, best, bestRow, rank, total: rows.length });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to update score' });
   }

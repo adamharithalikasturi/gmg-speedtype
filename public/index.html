@@ -12,7 +12,9 @@ body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:
 header{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:12px 28px}
 header img{height:40px}
 header h1{font:800 22px Fraunces,serif;margin:0;color:var(--navy)}
-header button{margin-left:auto;background:none;border:1px solid var(--line);border-radius:6px;padding:6px 12px;color:var(--mute);cursor:pointer;font:inherit;font-size:13px}
+.adm{margin-left:auto;display:flex;gap:8px}
+.adm button{background:none;border:1px solid var(--line);border-radius:6px;padding:6px 12px;color:var(--mute);cursor:pointer;font:inherit;font-size:13px}
+.adm button:hover{border-color:var(--navy);color:var(--navy)}
 main{display:grid;grid-template-columns:minmax(320px,1fr) minmax(340px,1fr);gap:24px;max-width:1150px;margin:24px auto;padding:0 20px}
 @media(max-width:860px){main{grid-template-columns:1fr}}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
@@ -22,54 +24,86 @@ input[type=text],input[type=email],select{width:100%;padding:11px 12px;border:1p
 input:focus,select:focus,button:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
 .photo{display:flex;align-items:center;gap:12px;margin-top:14px}
 .av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:600;background-size:cover;background-position:center;flex:none}
-.btn{margin-top:20px;width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;padding:14px;font:600 16px Inter;cursor:pointer}
-.btn:hover{background:#15307f}
+.btn{margin-top:20px;width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;padding:14px;font:600 16px Inter;cursor:pointer;transition:transform .15s,background .15s}
+.btn:hover{background:#15307f;transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
 .small{font-size:13px;color:var(--mute)}
 .target{font:600 28px/1.3 "SF Mono",Consolas,monospace;letter-spacing:1px;background:var(--bg);border-radius:10px;padding:18px;margin:10px 0;text-align:center;word-break:break-all}
 .target span.ok{color:var(--ok)}.target span.bad{color:#fff;background:var(--bad);border-radius:3px}.target span.cur{box-shadow:inset 0 -3px var(--navy)}
+.target.shake{animation:shake .3s}
+.target.win{animation:winpulse .6s}
 #count{font:800 120px Fraunces,serif;color:var(--navy);text-align:center;line-height:1.2}
+#count.pop{animation:cpop .9s ease-out}
 .stats-group{margin:16px 0}
 .stats-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--mute);margin-bottom:6px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.stat{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
+.stat{background:var(--bg);border-radius:10px;padding:10px;text-align:center;animation:statin .5s both}
+.stat:nth-child(2){animation-delay:.12s}.stat:nth-child(3){animation-delay:.24s}
 .stat b{display:block;font:800 22px Fraunces,serif;color:var(--navy)}
 .hide{display:none!important}
 .podium{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:8px 0 22px;min-height:190px}
-.pod{flex:1;max-width:130px;text-align:center}
+.pod{flex:1;max-width:130px;text-align:center;animation:fadeup .5s both}
+.pod.p1{animation-delay:.25s}.pod.p3{animation-delay:.1s}
 .pod .av{margin:0 auto 6px;width:54px;height:54px}
+.pod.p1 .av{position:relative;box-shadow:0 0 0 3px var(--gold)}
+.pod.p1 .av::after{content:"👑";position:absolute;top:-22px;left:50%;margin-left:-11px;font-size:22px;animation:bob 1.6s ease-in-out infinite}
 .pod .nm{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pod .dp{font-size:11px;color:var(--mute);line-height:1.25;margin-top:2px;min-height:27px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .pod .sc{font-size:12px;color:var(--mute)}
-.pod .blk{margin-top:6px;border-radius:8px 8px 0 0;background:var(--navy);color:#fff;font:800 28px Fraunces,serif;display:grid;place-items:center}
+.pod .blk{margin-top:6px;border-radius:8px 8px 0 0;background:var(--navy);color:#fff;font:800 28px Fraunces,serif;display:grid;place-items:center;transform-origin:bottom;animation:rise .7s cubic-bezier(.2,.9,.3,1.2) both}
 .pod.p1 .blk{height:96px;background:var(--gold)}.pod.p2 .blk{height:70px}.pod.p3 .blk{height:50px;background:#3a4c8a}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th{text-align:left;font-weight:500;color:var(--mute);padding:6px 6px;border-bottom:1px solid var(--line)}
 td{padding:9px 6px;border-bottom:1px solid var(--line)}
 tr.me{background:#fff7e0}
+tr.flash{animation:rowflash 1s ease 3}
 td.n{display:flex;align-items:center;gap:8px}td.n .av{width:28px;height:28px;font-size:11px}
 td.n .un{font-size:11px;color:var(--mute)}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 .dept-sec{margin:0 0 22px}
 .dept-sec .stats{margin-bottom:12px}
+.topdept{background:linear-gradient(90deg,#fff7e0,#ffe8a8,#fff7e0);background-size:200% 100%;animation:shimmer 3s linear infinite;border:1px solid #f0d58a;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:14px;color:var(--navy)}
+.crown{display:inline-block;animation:bob 1.6s ease-in-out infinite}
+.lbhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.lbhead h2{margin:0}
+.lbhead select{width:auto;max-width:240px;padding:7px 10px;font-size:13px}
+.pbtitle{background:linear-gradient(90deg,var(--navy),var(--gold),var(--navy));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 1.8s linear infinite}
+h2.pop{animation:popin .6s}
 .scroll-poem{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:10px;padding:16px 20px;margin-top:20px;font-family:'Fraunces',serif;font-style:italic;color:var(--navy);line-height:1.6;font-size:14px}
 .scroll-poem p{margin:0 0 8px}.scroll-poem p:last-child{margin:0;font-weight:600;font-style:normal;color:var(--navy)}
 canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
-@media(prefers-reduced-motion:reduce){canvas#fx{display:none}}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-140px);background:var(--navy);color:#fff;padding:12px 22px;border-radius:30px;font-weight:600;z-index:10;transition:transform .5s cubic-bezier(.2,1.2,.3,1);box-shadow:0 8px 24px rgba(12,31,90,.35);max-width:90vw;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes winpulse{0%{background:#c9f2dd;transform:scale(1)}50%{transform:scale(1.04)}100%{background:var(--bg);transform:scale(1)}}
+@keyframes cpop{0%{transform:scale(.4);opacity:0}30%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:.9}}
+@keyframes statin{0%{transform:translateY(14px) scale(.9);opacity:0}100%{transform:none;opacity:1}}
+@keyframes fadeup{0%{transform:translateY(20px);opacity:0}100%{transform:none;opacity:1}}
+@keyframes rise{0%{transform:scaleY(0)}100%{transform:scaleY(1)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes shimmer{to{background-position:-200% 0}}
+@keyframes popin{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes rowflash{0%,100%{background:#fff7e0}50%{background:#ffd966}}
+@media(prefers-reduced-motion:reduce){canvas#fx{display:none}*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <canvas id="fx"></canvas>
+<div id="toast"></div>
 <header>
   <img src="logo.png" alt="GMG">
   <h1>Fastest Fingers</h1>
-  <button id="admin">Admin reset</button>
+  <div class="adm">
+    <button id="export">Export CSV</button>
+    <button id="admin">Admin reset</button>
+  </div>
 </header>
 <main>
   <section class="panel">
     <div id="v-form">
       <h2>Enter your details</h2>
       <label for="name">Name</label><input type="text" id="name" maxlength="40" autocomplete="off">
-      <label for="email">GMG Email</label><input type="email" id="email" maxlength="80" autocomplete="off" 
+      <label for="email">GMG Email</label><input type="email" id="email" maxlength="80" autocomplete="off" placeholder="yourname@gmg.com">
       <label for="dept">Department</label>
       <select id="dept">
         <option value="">Select your department</option>
@@ -140,6 +174,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
 
     <div class="dept-sec hide" id="deptsec">
       <h2>Department Ranking</h2>
+      <div class="topdept" id="topdept"></div>
       <div class="stats">
         <div class="stat"><b id="ovn">0</b>Players</div>
         <div class="stat"><b id="ovw">0</b>Avg WPM</div>
@@ -151,7 +186,10 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
       </table>
     </div>
 
-    <h2>Leaderboard</h2>
+    <div class="lbhead">
+      <h2>Leaderboard</h2>
+      <select id="fdept" aria-label="Filter by department"><option value="">All departments</option></select>
+    </div>
     <table><thead><tr><th>#</th><th>Name</th><th>Dept</th><th class="num">WPM</th><th class="num">Acc</th><th class="num">Time</th><th class="num">Score</th></tr></thead><tbody id="rows"></tbody></table>
     <p class="small hide" id="empty">No scores yet. Be the first.</p>
   </section>
@@ -159,11 +197,17 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
 <script>
 const PW='Welcome2GMG@2026';
 const $=id=>document.getElementById(id);
-let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'', rows=[], t0=0, keys=0, errors=0, prev='';
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'', rows=[], t0=0, keys=0, errors=0, prev='', flashMe=false, lastShow=-1;
 const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const setHTML=(el,h)=>{if(el.dataset.h!==h){el.innerHTML=h;el.dataset.h=h}};
 $('name').value=me.name||'';$('email').value=me.email||'';$('dept').value=me.dept||'';
+
+/* department filter options (copied from the form dropdown) */
+[...$('dept').options].slice(1).forEach(o=>{const n=document.createElement('option');n.value=n.textContent=o.value||o.textContent;$('fdept').appendChild(n)});
+$('fdept').onchange=()=>draw();
 
 function setAv(){
   const a=$('avf');
@@ -213,7 +257,84 @@ picInput.onchange = e => {
 
 function show(v){['v-form','v-play','v-res'].forEach(x=>$(x).classList.toggle('hide',x!==v))}
 
+/* ---------- animation engine ---------- */
+const COLS=['#e0a526','#0c1f5a','#1a8f5c','#d23b3b','#5b7cfa','#ff7ab8'];
+const fx={ps:[],run:false};
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function spawn(o){fx.ps.push(Object.assign({x:0,y:0,vx:0,vy:0,g:.1,drag:1,rot:0,vr:0,life:0,max:200,s:8,col:COLS[0],t:'rect',fade:false,ch:''},o));fxStart()}
+function fxStart(){
+  if(RM)return;
+  const c=$('fx');if(c.width!==innerWidth||c.height!==innerHeight){c.width=innerWidth;c.height=innerHeight}
+  if(!fx.run){fx.run=true;requestAnimationFrame(fxTick)}
+}
+function fxTick(){
+  const c=$('fx'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);
+  fx.ps=fx.ps.filter(p=>p.life<p.max&&p.y<c.height+60);
+  fx.ps.forEach(p=>{
+    p.life++;p.vy+=p.g;p.vx*=p.drag;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;
+    x.save();x.globalAlpha=p.fade?Math.max(0,1-p.life/p.max):1;x.translate(p.x,p.y);x.rotate(p.rot);
+    if(p.t==='rect'){x.fillStyle=p.col;x.fillRect(-p.s/2,-p.s*.3,p.s,p.s*.6)}
+    else if(p.t==='dot'){x.fillStyle=p.col;x.beginPath();x.arc(0,0,p.s/2,0,7);x.fill()}
+    else{x.font=p.s+'px serif';x.textAlign='center';x.textBaseline='middle';x.fillText(p.ch,0,0)}
+    x.restore();
+  });
+  if(fx.ps.length)requestAnimationFrame(fxTick);else{x.clearRect(0,0,c.width,c.height);fx.run=false}
+}
+function confettiRain(n=140){
+  for(let i=0;i<n;i++)spawn({x:rnd(0,innerWidth),y:rnd(-innerHeight*.5,-20),vx:rnd(-1,1),vy:rnd(2,6),g:0,vr:rnd(-.2,.2),rot:rnd(0,6),s:rnd(5,11),col:pick(COLS),max:420});
+}
+function cannons(){
+  [0,1].forEach(side=>{
+    for(let i=0;i<80;i++){
+      const a=rnd(.9,1.35),sp=rnd(12,22);
+      spawn({x:side?innerWidth:0,y:innerHeight*.85,vx:Math.cos(a)*sp*(side?-1:1),vy:-Math.sin(a)*sp,g:.35,drag:.99,vr:rnd(-.3,.3),s:rnd(6,12),col:pick(COLS),t:Math.random()<.3?'dot':'rect',max:170});
+    }
+  });
+}
+function firework(x,y){
+  const col=pick(COLS),n=64;
+  for(let i=0;i<n;i++){const a=i/n*Math.PI*2,sp=rnd(2,7);spawn({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,g:.06,drag:.97,s:rnd(3,6),col,t:'dot',fade:true,max:75})}
+}
+function fireworks(n=6){for(let i=0;i<n;i++)setTimeout(()=>firework(rnd(innerWidth*.15,innerWidth*.85),rnd(innerHeight*.12,innerHeight*.5)),i*450)}
+function emojiRain(chars,n=40){
+  for(let i=0;i<n;i++)spawn({t:'emoji',ch:pick(chars),x:rnd(0,innerWidth),y:rnd(-innerHeight*.5,-20),vx:rnd(-.8,.8),vy:rnd(2,5),g:0,vr:rnd(-.05,.05),s:rnd(20,34),max:420});
+}
+function sparkle(x,y){
+  for(let i=0;i<30;i++){const a=rnd(0,Math.PI*2),sp=rnd(2,6),em=Math.random()<.4;
+    spawn({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,g:.05,drag:.97,t:em?'emoji':'dot',ch:'✨',s:em?rnd(14,22):rnd(3,6),col:pick(['#e0a526','#ffd966','#fff1b8']),fade:true,max:65});}
+}
+function bigShow(){
+  const shows=[
+    ()=>{cannons();confettiRain(100)},
+    ()=>{fireworks(7)},
+    ()=>{emojiRain(['⭐','🪙','🏆','✨'],50);cannons()},
+    ()=>{fireworks(4);confettiRain(120)}
+  ];
+  let i;do{i=Math.floor(Math.random()*shows.length)}while(i===lastShow);
+  lastShow=i;shows[i]();
+}
+function pbBurst(){
+  ['rw','ra','rn'].forEach((id,i)=>setTimeout(()=>{const b=$(id).getBoundingClientRect();sparkle(b.left+b.width/2,b.top+b.height/2)},i*250));
+  setTimeout(()=>emojiRain(['✨','⭐'],18),300);
+}
+let toastT;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),4500)}
+function countUp(id,val,suf=''){
+  const el=$(id),end=+val,dec=String(val).includes('.')?1:0;
+  if(RM||!isFinite(end)){el.textContent=val+suf;return}
+  const t=performance.now(),dur=900;
+  (function f(n){const p=Math.min(1,(n-t)/dur),e=1-Math.pow(1-p,3);el.textContent=(end*e).toFixed(dec)+suf;if(p<1)requestAnimationFrame(f)})(t);
+}
+function setCount(n){const c=$('count');c.textContent=n;c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')}
+
+/* ---------- data ---------- */
 async function load(){try{rows=await (await fetch('/api/scores')).json();draw()}catch{}}
+function deptStats(){
+  const g={};
+  rows.forEach(r=>{const d=g[r.dept]||(g[r.dept]={dept:r.dept,n:0,net:0,wpm:0});d.n++;d.net+=r.net;d.wpm+=r.wpm});
+  return Object.values(g).map(d=>({...d,avgNet:d.net/d.n,avgWpm:d.wpm/d.n})).sort((a,b)=>b.avgNet-a.avgNet);
+}
 function drawDepts(){
   const sec=$('deptsec');
   if(!rows.length){sec.classList.add('hide');return}
@@ -222,17 +343,23 @@ function drawDepts(){
   $('ovn').textContent=n;
   $('ovw').textContent=(rows.reduce((s,r)=>s+r.wpm,0)/n).toFixed(1);
   $('ovs').textContent=(rows.reduce((s,r)=>s+r.net,0)/n).toFixed(1);
-  const g={};
-  rows.forEach(r=>{const d=g[r.dept]||(g[r.dept]={dept:r.dept,n:0,net:0,wpm:0});d.n++;d.net+=r.net;d.wpm+=r.wpm});
-  const list=Object.values(g).map(d=>({...d,avgNet:d.net/d.n,avgWpm:d.wpm/d.n})).sort((a,b)=>b.avgNet-a.avgNet);
-  $('deptrows').innerHTML=list.map((d,i)=>`<tr class="${d.dept===me.dept?'me':''}"><td>${i+1}</td><td>${esc(d.dept)}</td><td class="num">${d.n}</td><td class="num">${d.avgWpm.toFixed(1)}</td><td class="num"><b>${d.avgNet.toFixed(1)}</b></td></tr>`).join('');
+  const list=deptStats();
+  setHTML($('topdept'),`<span class="crown">👑</span> Top Department: <b>${esc(list[0].dept)}</b> <span class="small">· ${list[0].avgNet.toFixed(1)} avg pts</span>`);
+  setHTML($('deptrows'),list.map((d,i)=>`<tr class="${d.dept===me.dept?'me':''}"><td>${i+1}</td><td>${esc(d.dept)}</td><td class="num">${d.n}</td><td class="num">${d.avgWpm.toFixed(1)}</td><td class="num"><b>${d.avgNet.toFixed(1)}</b></td></tr>`).join(''));
 }
 function draw(){
   const top=[...rows].sort((a,b)=>b.net-a.net), mk=(r,i)=>`<div class="pod p${i+1}">${avHTML(r)}<div class="nm">${esc(r.name)}</div><div class="dp">${esc(r.dept)}</div><div class="sc">${r.net} pts</div><div class="blk">${i+1}</div></div>`;
   const order=[1,0,2].filter(i=>top[i]);
-  $('podium').innerHTML=order.map(i=>mk(top[i],i)).join('');
+  setHTML($('podium'),order.map(i=>mk(top[i],i)).join(''));
   drawDepts();
-  $('empty').classList.toggle('hide',top.length>0);$('rows').innerHTML=top.map((r,i)=>`<tr class="${r.name===me.name&&r.dept===me.dept?'me':''}"><td>${i+1}</td><td class="n">${avHTML(r)}<div>${esc(r.name)}${r.username?`<div class="un">@${esc(r.username)}</div>`:''}</div></td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join('');
+
+  const f=$('fdept').value;
+  const list=f?top.filter(r=>r.dept===f):top;
+  const myU=(me.email||'').split('@')[0].toLowerCase();
+  const isMe=r=>myU?(r.username||'').toLowerCase()===myU:(r.name===me.name&&r.dept===me.dept);
+  $('empty').textContent=rows.length?'No players from this department yet.':'No scores yet. Be the first.';
+  $('empty').classList.toggle('hide',list.length>0);
+  setHTML($('rows'),list.map((r,i)=>`<tr class="${isMe(r)?'me'+(flashMe?' flash':''):''}"><td>${i+1}</td><td class="n">${avHTML(r)}<div>${esc(r.name)}${r.username?`<div class="un">@${esc(r.username)}</div>`:''}</div></td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join(''));
 }
 load();setInterval(load,4000);
 
@@ -242,36 +369,57 @@ $('go').onclick=()=>{
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$('err').textContent='Please enter a valid email address.';return}
   $('err').textContent='';me={name,email,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
   show('v-play');$('typing').classList.add('hide');$('count').classList.remove('hide');
-  let n=3;$('count').textContent=n;
-  const iv=setInterval(()=>{n--;if(n>0){$('count').textContent=n;return}clearInterval(iv);begin()},900);
+  let n=3;setCount(n);
+  const iv=setInterval(()=>{n--;if(n>0){setCount(n);return}clearInterval(iv);begin()},900);
 };
 function renderTarget(v){
   $('target').innerHTML=[...PW].map((c,i)=>{let k='';if(i<v.length)k=v[i]===c?'ok':'bad';else if(i===v.length)k='cur';return`<span class="${k}">${esc(c)}</span>`}).join('');
 }
 function begin(){
   $('count').classList.add('hide');$('typing').classList.remove('hide');
+  $('target').classList.remove('win','shake');
   const t=$('typed');t.value='';prev='';keys=errors=0;t0=0;renderTarget('');t.focus();
 }
 $('typed').addEventListener('paste',e=>e.preventDefault());
 $('typed').addEventListener('input',e=>{
   const t=e.target,v=t.value;
   if(!t0)t0=performance.now();
-  if(v.length>prev.length){for(let i=prev.length;i<v.length;i++){keys++;if(v[i]!==PW[i])errors++}}
+  let hadErr=false;
+  if(v.length>prev.length){for(let i=prev.length;i<v.length;i++){keys++;if(v[i]!==PW[i]){errors++;hadErr=true}}}
   prev=v;renderTarget(v);
+  if(hadErr){const tg=$('target');tg.classList.remove('shake');void tg.offsetWidth;tg.classList.add('shake')}
   if(v===PW){t.blur();finish()}
 });
+function celebrate(r,prevTop){
+  if(r.best){
+    pbBurst();
+    if(r.rank===1)setTimeout(bigShow,500);
+    else if(r.rank<=3)setTimeout(cannons,500);
+  }
+  const nt=(deptStats()[0]||{}).dept;
+  if(nt&&nt===me.dept&&nt!==prevTop){
+    setTimeout(()=>{toast(`🏆 ${me.dept} just took the #1 department spot!`);emojiRain(['👑','🎉','🏆'],45)},r.best&&r.rank===1?3500:1400);
+  }
+}
 async function finish(){
   const timeMs=performance.now()-t0;
+  const prevTop=(deptStats()[0]||{}).dept;
+  $('target').classList.add('win');
   try{
     const r=await (await fetch('/api/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...me,timeMs,keys,errors})})).json();
     if(r.error){alert(r.error);show('v-form');return}
     const a=r.attempt, b=r.bestRow||a;
-    $('cw').textContent=a.wpm;$('ca').textContent=a.acc+'%';$('cn').textContent=a.net;
-    $('rw').textContent=b.wpm;$('ra').textContent=b.acc+'%';$('rn').textContent=b.net;
-    $('rtitle').textContent=r.best?'New Personal Best!':'Attempt Complete';
+    const tl=$('rtitle');
+    tl.textContent=r.best?'New Personal Best!':'Attempt Complete';
+    tl.classList.toggle('pbtitle',!!r.best);
+    tl.classList.remove('pop');void tl.offsetWidth;tl.classList.add('pop');
     $('rrank').textContent=`You are ranked #${r.rank} of ${r.total}.`;
-    show('v-res');await load();
-    if(r.rank===1&&r.best)confetti();
+    show('v-res');
+    countUp('cw',a.wpm);countUp('ca',a.acc,'%');countUp('cn',a.net);
+    countUp('rw',b.wpm);countUp('ra',b.acc,'%');countUp('rn',b.net);
+    flashMe=true;setTimeout(()=>{flashMe=false},4000);
+    await load();
+    celebrate(r,prevTop);
   }catch{alert('Could not reach the server. Check your connection and try again.');show('v-form')}
 }
 $('again').onclick=()=>{show('v-form')};
@@ -283,11 +431,17 @@ $('admin').onclick=async()=>{
   if(r.ok){await load()}else alert('Wrong PIN.');
 };
 
-function confetti(){
-  const c=$('fx'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
-  const ps=Array.from({length:140},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,v:2+Math.random()*4,s:5+Math.random()*6,r:Math.random()*6,col:['#e0a526','#0c1f5a','#1a8f5c','#d23b3b','#5b7cfa'][Math.floor(Math.random()*5)]}));
-  let f=0;(function tick(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.y+=p.v;p.r+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.col;x.fillRect(0,0,p.s,p.s*.6);x.restore()});if(++f<220)requestAnimationFrame(tick);else x.clearRect(0,0,c.width,c.height)})();
-}
+$('export').onclick=async()=>{
+  const pin=prompt('Admin PIN');if(!pin)return;
+  try{
+    const r=await fetch('/api/export',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})});
+    if(!r.ok){alert(r.status===403?'Wrong PIN.':'Export failed.');return}
+    const blob=await r.blob(),a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='gmg-fastest-fingers.csv';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }catch{alert('Export failed. Check your connection.')}
+};
 </script>
 </body>
 </html>

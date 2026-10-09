@@ -18,8 +18,8 @@ main{display:grid;grid-template-columns:minmax(320px,1fr) minmax(340px,1fr);gap:
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
 h2{font:800 20px Fraunces,serif;margin:0 0 14px;color:var(--navy)}
 label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
-input[type=text]{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font:inherit}
-input:focus,button:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+input[type=text],input[type=email],select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
 .photo{display:flex;align-items:center;gap:12px;margin-top:14px}
 .av{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:600;background-size:cover;background-position:center;flex:none}
 .btn{margin-top:20px;width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;padding:14px;font:600 16px Inter;cursor:pointer}
@@ -38,6 +38,7 @@ input:focus,button:focus-visible{outline:2px solid var(--navy);outline-offset:1p
 .pod{flex:1;max-width:130px;text-align:center}
 .pod .av{margin:0 auto 6px;width:54px;height:54px}
 .pod .nm{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod .dp{font-size:11px;color:var(--mute);line-height:1.25;margin-top:2px;min-height:27px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .pod .sc{font-size:12px;color:var(--mute)}
 .pod .blk{margin-top:6px;border-radius:8px 8px 0 0;background:var(--navy);color:#fff;font:800 28px Fraunces,serif;display:grid;place-items:center}
 .pod.p1 .blk{height:96px;background:var(--gold)}.pod.p2 .blk{height:70px}.pod.p3 .blk{height:50px;background:#3a4c8a}
@@ -46,7 +47,10 @@ th{text-align:left;font-weight:500;color:var(--mute);padding:6px 6px;border-bott
 td{padding:9px 6px;border-bottom:1px solid var(--line)}
 tr.me{background:#fff7e0}
 td.n{display:flex;align-items:center;gap:8px}td.n .av{width:28px;height:28px;font-size:11px}
+td.n .un{font-size:11px;color:var(--mute)}
 .num{text-align:right;font-variant-numeric:tabular-nums}
+.dept-sec{margin:0 0 22px}
+.dept-sec .stats{margin-bottom:12px}
 .scroll-poem{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:10px;padding:16px 20px;margin-top:20px;font-family:'Fraunces',serif;font-style:italic;color:var(--navy);line-height:1.6;font-size:14px}
 .scroll-poem p{margin:0 0 8px}.scroll-poem p:last-child{margin:0;font-weight:600;font-style:normal;color:var(--navy)}
 canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
@@ -65,7 +69,19 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
     <div id="v-form">
       <h2>Enter your details</h2>
       <label for="name">Name</label><input type="text" id="name" maxlength="40" autocomplete="off">
-      <label for="dept">Department</label><input type="text" id="dept" maxlength="40" autocomplete="off">
+      <label for="email">GMG Email</label><input type="email" id="email" maxlength="80" autocomplete="off" placeholder="yourname@gmg.com">
+      <label for="dept">Department</label>
+      <select id="dept">
+        <option value="">Select your department</option>
+        <option>Retail &amp; Store Operations</option>
+        <option>Commercial &amp; Brand Management</option>
+        <option>Finance &amp; Accounting</option>
+        <option>Human Resources &amp; People</option>
+        <option>Digital &amp; E-Commerce</option>
+        <option>Marketing &amp; Communications</option>
+        <option>Supply Chain &amp; Logistics</option>
+        <option>Corporate &amp; Support Functions (IT)</option>
+      </select>
       <div class="photo">
         <div class="av" id="avf">?</div>
         <div>
@@ -78,7 +94,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
       <p class="small">You get one timed attempt per round. Your best score holds your place upon the high realm.</p>
 
       <div class="scroll-poem">
-        <p>“Welcome to the grand GMG Realm of Speed!</p>
+        <p>“Hark! Welcome to the grand GMG Realm of Speed!</p>
         <p>In this house, we share but one heart, one hall, and one place.</p>
         <p>Yet, let it be known through the kingdom—we share but one sacred password.</p>
         <p>Let us witness whose fingers prove swift enough to claim the crown!”</p>
@@ -121,6 +137,20 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
   <section class="panel">
     <h2>Top 3</h2>
     <div class="podium" id="podium"></div>
+
+    <div class="dept-sec hide" id="deptsec">
+      <h2>Department Ranking</h2>
+      <div class="stats">
+        <div class="stat"><b id="ovn">0</b>Players</div>
+        <div class="stat"><b id="ovw">0</b>Avg WPM</div>
+        <div class="stat"><b id="ovs">0</b>Avg Score</div>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Department</th><th class="num">Players</th><th class="num">Avg WPM</th><th class="num">Avg Score</th></tr></thead>
+        <tbody id="deptrows"></tbody>
+      </table>
+    </div>
+
     <h2>Leaderboard</h2>
     <table><thead><tr><th>#</th><th>Name</th><th>Dept</th><th class="num">WPM</th><th class="num">Acc</th><th class="num">Time</th><th class="num">Score</th></tr></thead><tbody id="rows"></tbody></table>
     <p class="small hide" id="empty">No scores yet. Be the first.</p>
@@ -132,8 +162,8 @@ const $=id=>document.getElementById(id);
 let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'', rows=[], t0=0, keys=0, errors=0, prev='';
 const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
-const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-$('name').value=me.name||'';$('dept').value=me.dept||'';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+$('name').value=me.name||'';$('email').value=me.email||'';$('dept').value=me.dept||'';
 
 function setAv(){
   const a=$('avf');
@@ -184,18 +214,33 @@ picInput.onchange = e => {
 function show(v){['v-form','v-play','v-res'].forEach(x=>$(x).classList.toggle('hide',x!==v))}
 
 async function load(){try{rows=await (await fetch('/api/scores')).json();draw()}catch{}}
+function drawDepts(){
+  const sec=$('deptsec');
+  if(!rows.length){sec.classList.add('hide');return}
+  sec.classList.remove('hide');
+  const n=rows.length;
+  $('ovn').textContent=n;
+  $('ovw').textContent=(rows.reduce((s,r)=>s+r.wpm,0)/n).toFixed(1);
+  $('ovs').textContent=(rows.reduce((s,r)=>s+r.net,0)/n).toFixed(1);
+  const g={};
+  rows.forEach(r=>{const d=g[r.dept]||(g[r.dept]={dept:r.dept,n:0,net:0,wpm:0});d.n++;d.net+=r.net;d.wpm+=r.wpm});
+  const list=Object.values(g).map(d=>({...d,avgNet:d.net/d.n,avgWpm:d.wpm/d.n})).sort((a,b)=>b.avgNet-a.avgNet);
+  $('deptrows').innerHTML=list.map((d,i)=>`<tr class="${d.dept===me.dept?'me':''}"><td>${i+1}</td><td>${esc(d.dept)}</td><td class="num">${d.n}</td><td class="num">${d.avgWpm.toFixed(1)}</td><td class="num"><b>${d.avgNet.toFixed(1)}</b></td></tr>`).join('');
+}
 function draw(){
-  const top=[...rows].sort((a,b)=>b.net-a.net), mk=(r,i)=>`<div class="pod p${i+1}">${avHTML(r)}<div class="nm">${esc(r.name)}</div><div class="sc">${r.net} pts</div><div class="blk">${i+1}</div></div>`;
+  const top=[...rows].sort((a,b)=>b.net-a.net), mk=(r,i)=>`<div class="pod p${i+1}">${avHTML(r)}<div class="nm">${esc(r.name)}</div><div class="dp">${esc(r.dept)}</div><div class="sc">${r.net} pts</div><div class="blk">${i+1}</div></div>`;
   const order=[1,0,2].filter(i=>top[i]);
   $('podium').innerHTML=order.map(i=>mk(top[i],i)).join('');
-  $('empty').classList.toggle('hide',top.length>0);$('rows').innerHTML=top.map((r,i)=>`<tr class="${r.name===me.name&&r.dept===me.dept?'me':''}"><td>${i+1}</td><td class="n">${avHTML(r)}${esc(r.name)}</td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join('');
+  drawDepts();
+  $('empty').classList.toggle('hide',top.length>0);$('rows').innerHTML=top.map((r,i)=>`<tr class="${r.name===me.name&&r.dept===me.dept?'me':''}"><td>${i+1}</td><td class="n">${avHTML(r)}<div>${esc(r.name)}${r.username?`<div class="un">@${esc(r.username)}</div>`:''}</div></td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join('');
 }
 load();setInterval(load,4000);
 
 $('go').onclick=()=>{
-  const name=$('name').value.trim(),dept=$('dept').value.trim();
-  if(!name||!dept){$('err').textContent='Enter your name and department to start.';return}
-  $('err').textContent='';me={name,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
+  const name=$('name').value.trim(),email=$('email').value.trim().toLowerCase(),dept=$('dept').value.trim();
+  if(!name||!email||!dept){$('err').textContent='Enter your name, GMG email and department to start.';return}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$('err').textContent='Please enter a valid email address.';return}
+  $('err').textContent='';me={name,email,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
   show('v-play');$('typing').classList.add('hide');$('count').classList.remove('hide');
   let n=3;$('count').textContent=n;
   const iv=setInterval(()=>{n--;if(n>0){$('count').textContent=n;return}clearInterval(iv);begin()},900);

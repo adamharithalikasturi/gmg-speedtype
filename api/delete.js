@@ -26,6 +26,14 @@ export default async function handler(req, res) {
     }
 
     await kv.set('gmg_scores', left);
+
+    // also remove that player's entries from the live feed
+    try {
+      const rawFeed = await kv.get('gmg_feed');
+      const feed = Array.isArray(rawFeed) ? rawFeed : [];
+      await kv.set('gmg_feed', feed.filter(e => e.id !== String(d.id)));
+    } catch (e) { /* ignore */ }
+
     return res.status(200).json({ ok: true, total: left.length });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to delete score' });

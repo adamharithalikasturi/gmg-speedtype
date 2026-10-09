@@ -111,6 +111,9 @@ body.adm-on .admcol{display:table-cell}
 .del{background:none;border:1px solid var(--line);border-radius:6px;cursor:pointer;padding:3px 7px;font-size:13px}
 .del:hover{background:#fdeaea;border-color:var(--bad)}
 body.adm-on #admmode{border-color:var(--bad);color:var(--bad)}
+#admin{display:none}
+body.adm-on #admin{display:inline-block;border-color:var(--bad);color:var(--bad)}
+.snd.off{opacity:.4}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 @keyframes winpulse{0%{background:#c9f2dd;transform:scale(1)}50%{transform:scale(1.04)}100%{background:var(--bg);transform:scale(1)}}
 @keyframes cpop{0%{transform:scale(.4);opacity:0}30%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:.9}}
@@ -134,8 +137,9 @@ body.adm-on #admmode{border-color:var(--bad);color:var(--bad)}
     <span class="credit">© All rights reserved · <a href="mailto:a.alikasturi@gmg.com">a.alikasturi@gmg.com</a></span>
     <button id="export" class="adminbtn">Export CSV</button>
     <button id="admmode" class="adminbtn">Admin mode</button>
-    <button id="admin" class="adminbtn">Admin reset</button>
-    <button id="snd" class="snd" type="button" aria-label="Toggle sound">🔊</button>
+    <button id="admin" class="adminbtn">Reset all scores</button>
+    <button id="snd" class="snd" type="button" aria-label="Toggle sound effects">🔊</button>
+    <button id="mus" class="snd" type="button" aria-label="Toggle background music">🎵</button>
   </div>
 </header>
 <main>
@@ -390,17 +394,66 @@ function tone(f,start,dur,type='sine',vol=.15){
 }
 const tick=()=>tone(660,0,.09,'sine',.12);
 const goSound=()=>{tone(1047,0,.4,'triangle',.18)};
-const chime=()=>[1047,1319,1568].forEach((f,i)=>tone(f,i*.12,.55,'triangle',.14));
+const chime=()=>{duck();[1047,1319,1568].forEach((f,i)=>tone(f,i*.12,.55,'triangle',.14))};
 const doneSound=()=>{tone(523,0,.25,'sine',.12);tone(659,.13,.35,'sine',.12)};
 const fanfare=()=>{
+  duck();
   [523,659,784,1047].forEach((f,i)=>tone(f,i*.15,.28,'sawtooth',.07));
   [523,659,784,1047].forEach(f=>tone(f,.65,1,'sawtooth',.05));
 };
+/* ---------- background music (synthesised ambient loop) ---------- */
+const musicPref=()=>{try{return localStorage.getItem('gmgMusic')!=='0'}catch{return true}};
+const CH=[[261.63,329.63,392],[220,261.63,329.63],[174.61,220,261.63],[196,246.94,293.66]];
+let mGain=null,mTimer=null,mNext=0,mStep=0;
+function mNote(f,t,d,type,v){
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type=type;o.frequency.value=f;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.04);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g);g.connect(mGain);o.start(t);o.stop(t+d+.05);
+}
+function musicSched(){
+  if(!AC||!mGain)return;
+  while(mNext<AC.currentTime+1.2){
+    const ch=CH[Math.floor(mStep/8)%4],si=mStep%8;
+    mNote(ch[[0,1,2,1,0,1,2,1][si]]*2,mNext,.55,'triangle',.5);
+    if(si===0){mNote(ch[0]/2,mNext,2.3,'sine',.7);ch.forEach(f=>mNote(f,mNext,2.4,'sine',.22))}
+    mNext+=.3;mStep++;
+  }
+}
+function startMusic(){
+  if(!musicPref()||mTimer)return;
+  const a=ac();if(!a)return;
+  mGain=a.createGain();mGain.gain.value=.07;mGain.connect(a.destination);
+  mNext=a.currentTime+.1;mStep=0;mTimer=setInterval(musicSched,250);musicSched();
+}
+function stopMusic(){
+  if(!mTimer)return;
+  clearInterval(mTimer);mTimer=null;
+  const g=mGain;mGain=null;
+  if(g&&AC){g.gain.setTargetAtTime(0,AC.currentTime,.1);setTimeout(()=>{try{g.disconnect()}catch{}},700)}
+}
+function duck(){
+  if(!mGain||!AC)return;
+  const t=AC.currentTime;
+  mGain.gain.cancelScheduledValues(t);
+  mGain.gain.setTargetAtTime(.02,t,.05);
+  mGain.gain.setTargetAtTime(.07,t+1.8,.4);
+}
+const mb=$('mus');
+const paintMus=()=>{const on=musicPref();mb.classList.toggle('off',!on);mb.title=on?'Music on':'Music off'};
+paintMus();
+mb.onclick=()=>{
+  const on=musicPref();
+  try{localStorage.setItem('gmgMusic',on?'0':'1')}catch{}
+  paintMus();
+  if(on)stopMusic();else startMusic();
+};
+
 const sb=$('snd');
 const paintSnd=()=>{sb.textContent=muted()?'🔇':'🔊';sb.title=muted()?'Sound off':'Sound on'};
 paintSnd();
 sb.onclick=()=>{try{localStorage.setItem('gmgMute',muted()?'0':'1')}catch{}paintSnd();if(!muted()){ac();chime()}};
-document.addEventListener('click',()=>{ac();$('tvhint').style.display='none'},{once:true});
+document.addEventListener('click',()=>{ac();startMusic();$('tvhint').style.display='none'},{once:true});
 
 /* ---------- data ---------- */
 const myUser=()=>(me.email||'').split('@')[0].toLowerCase();
@@ -520,10 +573,14 @@ async function finish(){
 $('again').onclick=()=>{show('v-form')};
 
 $('admin').onclick=async()=>{
-  const pin=prompt('Admin PIN');if(!pin)return;
-  if(!confirm('This deletes every score. Continue?'))return;
-  const r=await fetch('/api/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})});
-  if(r.ok){await load()}else alert('Wrong PIN.');
+  if(!adminPin)return;
+  if(prompt('This deletes EVERY score. Type RESET to confirm.')!=='RESET')return;
+  try{
+    const r=await fetch('/api/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:adminPin})});
+    if(r.ok){await load()}
+    else if(r.status===403){alert('Wrong PIN.');exitAdmin()}
+    else alert('Reset failed.');
+  }catch{alert('Could not reach the server.')}
 };
 
 $('export').onclick=async()=>{

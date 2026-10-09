@@ -9,10 +9,10 @@
 :root{--navy:#0c1f5a;--ink:#14213d;--bg:#f4f6fb;--card:#fff;--line:#dfe4f0;--gold:#e0a526;--ok:#1a8f5c;--bad:#d23b3b;--mute:#6b7693}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-header{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:12px 28px}
+header{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:12px 28px;flex-wrap:wrap}
 header img{height:40px}
 header h1{font:800 22px Fraunces,serif;margin:0;color:var(--navy)}
-.adm{margin-left:auto;display:flex;gap:8px}
+.adm{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .adm button{background:none;border:1px solid var(--line);border-radius:6px;padding:6px 12px;color:var(--mute);cursor:pointer;font:inherit;font-size:13px}
 .adm button:hover{border-color:var(--navy);color:var(--navy)}
 main{display:grid;grid-template-columns:minmax(320px,1fr) minmax(340px,1fr);gap:24px;max-width:1150px;margin:24px auto;padding:0 20px}
@@ -74,6 +74,38 @@ h2.pop{animation:popin .6s}
 canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-140px);background:var(--navy);color:#fff;padding:12px 22px;border-radius:30px;font-weight:600;z-index:10;transition:transform .5s cubic-bezier(.2,1.2,.3,1);box-shadow:0 8px 24px rgba(12,31,90,.35);max-width:90vw;text-align:center}
 #toast.on{transform:translateX(-50%) translateY(0)}
+.credit{font-size:12px;color:var(--mute);white-space:nowrap}
+.credit a{color:inherit;text-decoration:none}.credit a:hover{text-decoration:underline}
+.adm button.snd{padding:6px 10px;font-size:15px;line-height:1}
+.tvhint{display:none}
+body.tv header{padding:18px 40px}
+body.tv header img{height:56px}
+body.tv header h1{font-size:34px}
+body.tv .adminbtn,body.tv #formpanel{display:none}
+body.tv main{grid-template-columns:1fr;max-width:1700px;margin:28px auto}
+body.tv .panel{padding:32px}
+body.tv .twocol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:40px;align-items:start}
+body.tv h2{font-size:30px}
+body.tv .podium{min-height:260px}
+body.tv .pod{max-width:180px}
+body.tv .pod .av{width:76px;height:76px}
+body.tv .pod .nm{font-size:20px}
+body.tv .pod .dp{font-size:14px}
+body.tv .pod .sc{font-size:16px}
+body.tv .pod .blk{font-size:38px}
+body.tv .pod.p1 .blk{height:130px}body.tv .pod.p2 .blk{height:96px}body.tv .pod.p3 .blk{height:68px}
+body.tv table{font-size:20px}
+body.tv th{font-size:16px}
+body.tv td{padding:12px 8px}
+body.tv td.n .av{width:40px;height:40px;font-size:14px}
+body.tv td.n .un{font-size:14px}
+body.tv .topdept{font-size:20px}
+body.tv .stat{font-size:15px}
+body.tv .stat b{font-size:30px}
+body.tv .lbhead select{display:none}
+body.tv .tvhint{display:block;text-align:center;color:var(--mute);font-size:14px;padding:0 0 12px}
+body.tv #toast{font-size:28px;padding:18px 36px}
+@media(max-width:1100px){body.tv .twocol{grid-template-columns:1fr}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 @keyframes winpulse{0%{background:#c9f2dd;transform:scale(1)}50%{transform:scale(1.04)}100%{background:var(--bg);transform:scale(1)}}
 @keyframes cpop{0%{transform:scale(.4);opacity:0}30%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:.9}}
@@ -94,12 +126,14 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
   <img src="logo.png" alt="GMG">
   <h1>Fastest Fingers</h1>
   <div class="adm">
-    <button id="export">Export CSV</button>
-    <button id="admin">Admin reset</button>
+    <span class="credit">© All rights reserved · <a href="mailto:a.alikasturi@gmg.com">a.alikasturi@gmg.com</a></span>
+    <button id="export" class="adminbtn">Export CSV</button>
+    <button id="admin" class="adminbtn">Admin reset</button>
+    <button id="snd" class="snd" type="button" aria-label="Toggle sound">🔊</button>
   </div>
 </header>
 <main>
-  <section class="panel">
+  <section class="panel" id="formpanel">
     <div id="v-form">
       <h2>Enter your details</h2>
       <label for="name">Name</label><input type="text" id="name" maxlength="40" autocomplete="off">
@@ -169,6 +203,8 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
     </div>
   </section>
   <section class="panel">
+    <div class="tvhint" id="tvhint">🔈 Click anywhere on the screen to enable sound</div>
+    <div class="twocol"><div>
     <h2>Top 3</h2>
     <div class="podium" id="podium"></div>
 
@@ -186,18 +222,21 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
       </table>
     </div>
 
+    </div><div>
     <div class="lbhead">
       <h2>Leaderboard</h2>
       <select id="fdept" aria-label="Filter by department"><option value="">All departments</option></select>
     </div>
     <table><thead><tr><th>#</th><th>Name</th><th>Dept</th><th class="num">WPM</th><th class="num">Acc</th><th class="num">Time</th><th class="num">Score</th></tr></thead><tbody id="rows"></tbody></table>
     <p class="small hide" id="empty">No scores yet. Be the first.</p>
+    </div></div>
   </section>
 </main>
 <script>
 const PW='Welcome2GMG@2026';
 const $=id=>document.getElementById(id);
 const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const TV=/[?&]tv\b/.test(location.search);if(TV)document.body.classList.add('tv');
 let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'', rows=[], t0=0, keys=0, errors=0, prev='', flashMe=false, lastShow=-1;
 const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
@@ -319,7 +358,7 @@ function pbBurst(){
   setTimeout(()=>emojiRain(['✨','⭐'],18),300);
 }
 let toastT;
-function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),4500)}
+function toast(msg,ms=4500){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms)}
 function countUp(id,val,suf=''){
   const el=$(id),end=+val,dec=String(val).includes('.')?1:0;
   if(RM||!isFinite(end)){el.textContent=val+suf;return}
@@ -328,8 +367,56 @@ function countUp(id,val,suf=''){
 }
 function setCount(n){const c=$('count');c.textContent=n;c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')}
 
+/* ---------- sound (synthesised, no files) ---------- */
+let AC=null;
+const muted=()=>{try{return localStorage.getItem('gmgMute')==='1'}catch{return false}};
+function ac(){
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch{}}
+  if(AC&&AC.state==='suspended')AC.resume();
+  return AC;
+}
+function tone(f,start,dur,type='sine',vol=.15){
+  if(muted())return;const a=ac();if(!a)return;
+  const t=a.currentTime+start,o=a.createOscillator(),g=a.createGain();
+  o.type=type;o.frequency.value=f;
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.05);
+}
+const tick=()=>tone(660,0,.09,'sine',.12);
+const goSound=()=>{tone(1047,0,.4,'triangle',.18)};
+const chime=()=>[1047,1319,1568].forEach((f,i)=>tone(f,i*.12,.55,'triangle',.14));
+const doneSound=()=>{tone(523,0,.25,'sine',.12);tone(659,.13,.35,'sine',.12)};
+const fanfare=()=>{
+  [523,659,784,1047].forEach((f,i)=>tone(f,i*.15,.28,'sawtooth',.07));
+  [523,659,784,1047].forEach(f=>tone(f,.65,1,'sawtooth',.05));
+};
+const sb=$('snd');
+const paintSnd=()=>{sb.textContent=muted()?'🔇':'🔊';sb.title=muted()?'Sound off':'Sound on'};
+paintSnd();
+sb.onclick=()=>{try{localStorage.setItem('gmgMute',muted()?'0':'1')}catch{}paintSnd();if(!muted()){ac();chime()}};
+document.addEventListener('click',()=>{ac();$('tvhint').style.display='none'},{once:true});
+
 /* ---------- data ---------- */
-async function load(){try{rows=await (await fetch('/api/scores')).json();draw()}catch{}}
+const myUser=()=>(me.email||'').split('@')[0].toLowerCase();
+const isMe=r=>myUser()?(r.username||'').toLowerCase()===myUser():(r.name===me.name&&r.dept===me.dept);
+const rid=r=>r?(r.username?r.username.toLowerCase():r.name.toLowerCase()+'|'+r.dept):'';
+let lastTop='',seen=false;
+function newLeader(t){
+  toast(`🔥 New #1: ${t.name} (${t.dept}) — ${t.net} pts!`,7000);
+  fireworks(TV?8:4);fanfare();
+}
+async function load(){
+  try{
+    const data=await (await fetch('/api/scores')).json();
+    if(!Array.isArray(data))return;
+    rows=data;
+    const t=[...rows].sort((a,b)=>b.net-a.net)[0],id=rid(t);
+    /* a different person took #1 -> alert every watching screen (the new leader's own screen has its own celebration) */
+    if(seen&&id&&id!==lastTop&&!isMe(t))newLeader(t);
+    lastTop=id;seen=true;
+    draw();
+  }catch{}
+}
 function deptStats(){
   const g={};
   rows.forEach(r=>{const d=g[r.dept]||(g[r.dept]={dept:r.dept,n:0,net:0,wpm:0});d.n++;d.net+=r.net;d.wpm+=r.wpm});
@@ -355,13 +442,13 @@ function draw(){
 
   const f=$('fdept').value;
   const list=f?top.filter(r=>r.dept===f):top;
-  const myU=(me.email||'').split('@')[0].toLowerCase();
-  const isMe=r=>myU?(r.username||'').toLowerCase()===myU:(r.name===me.name&&r.dept===me.dept);
+  const deptBest=new Set(),seenD={};
+  top.forEach(r=>{if(!seenD[r.dept]){seenD[r.dept]=1;deptBest.add(r)}});
   $('empty').textContent=rows.length?'No players from this department yet.':'No scores yet. Be the first.';
   $('empty').classList.toggle('hide',list.length>0);
-  setHTML($('rows'),list.map((r,i)=>`<tr class="${isMe(r)?'me'+(flashMe?' flash':''):''}"><td>${i+1}</td><td class="n">${avHTML(r)}<div>${esc(r.name)}${r.username?`<div class="un">@${esc(r.username)}</div>`:''}</div></td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join(''));
+  setHTML($('rows'),list.map((r,i)=>`<tr class="${isMe(r)?'me'+(flashMe?' flash':''):''}"><td>${i+1}</td><td class="n">${avHTML(r)}<div>${esc(r.name)}${deptBest.has(r)?` <span title="Top of ${esc(r.dept)}">🥇</span>`:''}${r.username?`<div class="un">@${esc(r.username)}</div>`:''}</div></td><td>${esc(r.dept)}</td><td class="num">${r.wpm}</td><td class="num">${r.acc}%</td><td class="num">${(r.timeMs/1000).toFixed(2)}s</td><td class="num"><b>${r.net}</b></td></tr>`).join(''));
 }
-load();setInterval(load,4000);
+load();setInterval(load,TV?3000:4000);
 
 $('go').onclick=()=>{
   const name=$('name').value.trim(),email=$('email').value.trim().toLowerCase(),dept=$('dept').value.trim();
@@ -369,15 +456,15 @@ $('go').onclick=()=>{
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$('err').textContent='Please enter a valid email address.';return}
   $('err').textContent='';me={name,email,dept,photo};localStorage.setItem('gmgProfile',JSON.stringify(me));draw();
   show('v-play');$('typing').classList.add('hide');$('count').classList.remove('hide');
-  let n=3;setCount(n);
-  const iv=setInterval(()=>{n--;if(n>0){setCount(n);return}clearInterval(iv);begin()},900);
+  ac();let n=3;setCount(n);tick();
+  const iv=setInterval(()=>{n--;if(n>0){setCount(n);tick();return}clearInterval(iv);begin()},900);
 };
 function renderTarget(v){
   $('target').innerHTML=[...PW].map((c,i)=>{let k='';if(i<v.length)k=v[i]===c?'ok':'bad';else if(i===v.length)k='cur';return`<span class="${k}">${esc(c)}</span>`}).join('');
 }
 function begin(){
   $('count').classList.add('hide');$('typing').classList.remove('hide');
-  $('target').classList.remove('win','shake');
+  $('target').classList.remove('win','shake');goSound();
   const t=$('typed');t.value='';prev='';keys=errors=0;t0=0;renderTarget('');t.focus();
 }
 $('typed').addEventListener('paste',e=>e.preventDefault());
@@ -415,6 +502,7 @@ async function finish(){
     tl.classList.remove('pop');void tl.offsetWidth;tl.classList.add('pop');
     $('rrank').textContent=`You are ranked #${r.rank} of ${r.total}.`;
     show('v-res');
+    if(r.best&&r.rank===1)fanfare();else if(r.best)chime();else doneSound();
     countUp('cw',a.wpm);countUp('ca',a.acc,'%');countUp('cn',a.net);
     countUp('rw',b.wpm);countUp('ra',b.acc,'%');countUp('rn',b.net);
     flashMe=true;setTimeout(()=>{flashMe=false},4000);

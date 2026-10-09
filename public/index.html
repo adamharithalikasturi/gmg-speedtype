@@ -114,6 +114,65 @@ body.adm-on #admmode{border-color:var(--bad);color:var(--bad)}
 #admin{display:none}
 body.adm-on #admin{display:inline-block;border-color:var(--bad);color:var(--bad)}
 .snd.off{opacity:.4}
+.adm a.snd{border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:15px;line-height:1;text-decoration:none;color:var(--mute);cursor:pointer}
+.adm a.snd:hover{border-color:var(--navy);color:var(--navy)}
+#export{display:none}
+body.adm-on #export{display:inline-block}
+.rail{display:none}
+.rcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 10px;margin-bottom:14px}
+.rcard h3{font:800 15px Fraunces,serif;margin:0 0 4px;color:var(--navy)}
+.rcard .sub{font-size:11px;color:var(--mute);margin-bottom:10px}
+.lane{margin-bottom:9px}
+.lane .lb{display:flex;justify-content:space-between;gap:6px;font-size:11px;margin-bottom:3px}
+.lane .lb .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lane .lb .pt{color:var(--mute);font-variant-numeric:tabular-nums}
+.lane.mine .nm{color:var(--navy);font-weight:600}
+.lane.lead .nm::before{content:"👑 "}
+.track{position:relative;height:22px;background:var(--bg);border-radius:11px}
+.bar{position:absolute;left:0;top:0;bottom:0;width:3%;border-radius:11px;background:linear-gradient(90deg,#dfe4f0,#8fa0d8);transition:width 1.4s cubic-bezier(.3,.8,.3,1)}
+.lane.lead .bar{background:linear-gradient(90deg,#fbe7a8,var(--gold))}
+.runner{position:absolute;left:0;top:-3px;font-size:18px;line-height:22px;transition:left 1.4s cubic-bezier(.3,.8,.3,1)}
+.runner i{display:inline-block;font-style:normal;animation:run .45s ease-in-out infinite alternate}
+.lane.lead .runner i{animation-duration:.3s;filter:drop-shadow(0 0 4px rgba(224,165,38,.9))}
+.flag{position:absolute;right:3px;top:0;font-size:13px;line-height:22px}
+.hof{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.hof:first-child{border-top:0}
+.hof .ic{font-size:22px;width:30px;text-align:center;flex:none}
+.hof .k{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--mute)}
+.hof .v{font-weight:600;font-size:14px;line-height:1.2}
+.hof .s{font-size:11px;color:var(--mute)}
+.feedwin{height:min(560px,calc(100vh - 230px));overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(transparent,#000 6%,#000 94%,transparent)}
+.feedtrack.scroll{animation:feedscroll var(--d,20s) linear infinite}
+.feedwin:hover .feedtrack{animation-play-state:paused}
+.fi{display:flex;gap:8px;align-items:flex-start;padding:9px 8px;border-radius:8px;font-size:13px;line-height:1.3;margin-bottom:6px;background:var(--bg)}
+.fi.pb{background:#fff7e0}
+.fi.top{background:linear-gradient(90deg,#ffe8a8,#fff7e0);border:1px solid #f0d58a}
+.fi .fd{color:var(--mute);font-size:12px}
+.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);margin-right:7px;animation:pulse 1.2s infinite}
+@media(min-width:1700px){
+  .rail{display:block;position:fixed;top:84px;width:min(340px,calc((100vw - 1150px)/2 - 44px));max-height:calc(100vh - 100px);overflow:hidden}
+  .rail.l{left:18px}.rail.r{right:18px}
+}
+@media(min-width:1800px){
+  body.tv .rail{display:block;position:fixed;top:100px;width:320px}
+  body.tv .rail.l{left:24px}body.tv .rail.r{right:24px}
+  body.tv main{max-width:calc(100vw - 740px)}
+  body.tv table{font-size:17px}
+  body.tv td{padding:10px 6px}
+  body.tv .twocol{gap:28px}
+  body.tv .pod{max-width:150px}
+  body.tv .rcard h3{font-size:18px}
+  body.tv .rcard .sub{font-size:13px}
+  body.tv .lane .lb{font-size:13px}
+  body.tv .hof .v{font-size:16px}
+  body.tv .hof .s,body.tv .hof .k{font-size:12px}
+  body.tv .fi{font-size:15px}
+  body.tv .feedwin{height:calc(100vh - 260px)}
+}
+@media(max-width:1799px){body.tv .rail{display:none}}
+@keyframes feedscroll{to{transform:translateY(-50%)}}
+@keyframes run{to{transform:translateY(-3px) rotate(-8deg)}}
+@keyframes pulse{50%{opacity:.25}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 @keyframes winpulse{0%{background:#c9f2dd;transform:scale(1)}50%{transform:scale(1.04)}100%{background:var(--bg);transform:scale(1)}}
 @keyframes cpop{0%{transform:scale(.4);opacity:0}30%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:.9}}
@@ -136,12 +195,20 @@ body.adm-on #admin{display:inline-block;border-color:var(--bad);color:var(--bad)
   <div class="adm">
     <span class="credit">© All rights reserved · <a href="mailto:a.alikasturi@gmg.com">a.alikasturi@gmg.com</a></span>
     <button id="export" class="adminbtn">Export CSV</button>
-    <button id="admmode" class="adminbtn">Admin mode</button>
     <button id="admin" class="adminbtn">Reset all scores</button>
     <button id="snd" class="snd" type="button" aria-label="Toggle sound effects">🔊</button>
     <button id="mus" class="snd" type="button" aria-label="Toggle background music">🎵</button>
+    <a id="tvbtn" class="snd" href="?tv" title="Open big-screen (TV) mode">📺</a>
+    <button id="admmode" class="snd adminbtn" type="button" aria-label="Admin mode" title="Admin mode (locked)">🔒</button>
   </div>
 </header>
+<aside class="rail l" aria-label="Department race and hall of fame">
+  <div class="rcard"><h3>🏁 Department Race</h3><div class="sub">Runner position = average score</div><div id="race"></div></div>
+  <div class="rcard"><h3>🏆 Hall of Fame</h3><div id="hof"></div></div>
+</aside>
+<aside class="rail r" aria-label="Live feed">
+  <div class="rcard"><h3><span class="live"></span>Live Feed</h3><div class="sub">Latest results as they happen</div><div class="feedwin"><div class="feedtrack" id="feed"></div></div></div>
+</aside>
 <main>
   <section class="panel" id="formpanel">
     <div id="v-form">
@@ -247,6 +314,7 @@ const PW='Welcome2GMG@2026';
 const $=id=>document.getElementById(id);
 const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const TV=/[?&]tv\b/.test(location.search);if(TV)document.body.classList.add('tv');
+if(TV){const a=document.getElementById('tvbtn');a.href=location.pathname;a.title='Exit big-screen mode';a.textContent='↩ Exit TV'}
 let me=JSON.parse(localStorage.getItem('gmgProfile')||'{}'), photo=me.photo||'', rows=[], t0=0, keys=0, errors=0, prev='', flashMe=false, lastShow=-1;
 const ini=n=>n.split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
 const avHTML=(r,cls='')=>r.photo?`<div class="av ${cls}" style="background-image:url(${r.photo})"></div>`:`<div class="av ${cls}">${ini(r.name)}</div>`;
@@ -474,7 +542,7 @@ async function load(){
     const prevStill=rows.some(r=>rid(r)===lastTop);
     if(seen&&id&&id!==lastTop&&prevStill&&!isMe(t))newLeader(t);
     lastTop=id;seen=true;
-    draw();
+    draw();loadFeed();
   }catch{}
 }
 function deptStats(){
@@ -498,7 +566,7 @@ function draw(){
   const top=[...rows].sort((a,b)=>b.net-a.net), mk=(r,i)=>`<div class="pod p${i+1}">${avHTML(r)}<div class="nm">${esc(r.name)}</div><div class="dp">${esc(r.dept)}</div><div class="sc">${r.net} pts</div><div class="blk">${i+1}</div></div>`;
   const order=[1,0,2].filter(i=>top[i]);
   setHTML($('podium'),order.map(i=>mk(top[i],i)).join(''));
-  drawDepts();
+  drawDepts();drawRace();drawHof();
 
   const f=$('fdept').value;
   const list=f?top.filter(r=>r.dept===f):top;
@@ -584,10 +652,10 @@ $('admin').onclick=async()=>{
 };
 
 $('export').onclick=async()=>{
-  const pin=prompt('Admin PIN');if(!pin)return;
+  const pin=adminPin;if(!pin)return;
   try{
     const r=await fetch('/api/export',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})});
-    if(!r.ok){alert(r.status===403?'Wrong PIN.':'Export failed.');return}
+    if(!r.ok){if(r.status===403){alert('Wrong PIN.');exitAdmin()}else alert('Export failed.');return}
     const blob=await r.blob(),a=document.createElement('a');
     a.href=URL.createObjectURL(blob);a.download='gmg-fastest-fingers.csv';
     document.body.appendChild(a);a.click();a.remove();
@@ -595,17 +663,62 @@ $('export').onclick=async()=>{
   }catch{alert('Export failed. Check your connection.')}
 };
 
+/* ---------- side panels: race track, hall of fame, live feed ---------- */
+const DEPTS=[...$('dept').options].slice(1).map(o=>o.value);
+$('race').innerHTML=DEPTS.map(d=>`<div class="lane"><div class="lb"><span class="nm">${esc(d)}</span><b class="pt">–</b></div><div class="track"><div class="bar"></div><div class="runner"><i>🏃</i></div><span class="flag">🏁</span></div></div>`).join('');
+let feed=[];
+function drawRace(){
+  const st={};deptStats().forEach(d=>{st[d.dept]=d});
+  const vals=Object.values(st).map(d=>d.avgNet),max=vals.length?Math.max(...vals):0;
+  const lead=max>0?(Object.values(st).find(d=>d.avgNet===max)||{}).dept:'';
+  $('race').querySelectorAll('.lane').forEach((ln,i)=>{
+    const d=DEPTS[i],v=st[d]?st[d].avgNet:0,pct=max>0?v/max:0;
+    ln.querySelector('.runner').style.left=(pct*80)+'%';
+    ln.querySelector('.bar').style.width=(pct*80+4)+'%';
+    ln.querySelector('.pt').textContent=v?v.toFixed(1):'–';
+    ln.classList.toggle('lead',d===lead);
+    ln.classList.toggle('mine',d===me.dept);
+  });
+}
+function drawHof(){
+  const el=$('hof');
+  if(!rows.length){setHTML(el,'<div class="small">Records will show up here after the first score.</div>');return}
+  const fast=rows.reduce((a,b)=>b.timeMs<a.timeMs?b:a);
+  const acc=rows.reduce((a,b)=>(b.acc>a.acc||(b.acc===a.acc&&b.timeMs<a.timeMs))?b:a);
+  const att=rows.reduce((s,r)=>s+(r.attempts||1),0);
+  const g={};rows.forEach(r=>{g[r.dept]=(g[r.dept]||0)+1});
+  const [bd,bn]=Object.entries(g).sort((a,b)=>b[1]-a[1])[0];
+  const card=(ic,k,v,sub)=>`<div class="hof"><div class="ic">${ic}</div><div><div class="k">${k}</div><div class="v">${esc(v)}</div><div class="s">${esc(sub)}</div></div></div>`;
+  setHTML(el,
+    card('⚡','Fastest time',fast.name,(fast.timeMs/1000).toFixed(2)+'s · '+fast.dept)+
+    card('🎯','Most accurate',acc.name,acc.acc+'% · '+acc.dept)+
+    card('🔁','Total attempts',String(att),'from '+rows.length+' player'+(rows.length===1?'':'s'))+
+    card('👥','Busiest department',bd,bn+' player'+(bn===1?'':'s')));
+}
+async function loadFeed(){
+  try{const f=await (await fetch('/api/feed')).json();if(Array.isArray(f)){feed=f;drawFeed()}}catch{}
+}
+function drawFeed(){
+  const el=$('feed');
+  if(!feed.length){el.classList.remove('scroll');setHTML(el,'<div class="small" style="padding:6px 2px">No activity yet. Be the first!</div>');return}
+  const item=e=>`<div class="fi${e.top?' top':e.pb?' pb':''}"><span>${e.top?'🔥':e.pb?'⭐':'⌨️'}</span><div>${e.top?'<b>New #1!</b> ':''}${esc(e.name)} <span class="fd">(${esc(e.dept)})</span> · <b>${e.net} pts</b></div></div>`;
+  const html=feed.map(item).join(''),sc=feed.length>=5;
+  el.style.setProperty('--d',(feed.length*3.5)+'s');
+  el.classList.toggle('scroll',sc);
+  setHTML(el,sc?html+html:html);
+}
+
 /* ---------- admin mode: delete individual scores ---------- */
 let adminPin='';
 const post=(url,body)=>fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-function exitAdmin(){adminPin='';document.body.classList.remove('adm-on');$('admmode').textContent='Admin mode'}
+function exitAdmin(){adminPin='';document.body.classList.remove('adm-on');$('admmode').textContent='🔒';$('admmode').title='Admin mode (locked)'}
 $('admmode').onclick=async()=>{
   if(adminPin){exitAdmin();return}
   const pin=prompt('Admin PIN');if(!pin)return;
   try{
     const r=await post('/api/delete',{pin});
     if(!r.ok){alert('Wrong PIN.');return}
-    adminPin=pin;document.body.classList.add('adm-on');$('admmode').textContent='Exit admin mode';
+    adminPin=pin;document.body.classList.add('adm-on');$('admmode').textContent='🔓';$('admmode').title='Exit admin mode';
   }catch{alert('Could not reach the server.')}
 };
 $('rows').addEventListener('click',async e=>{
